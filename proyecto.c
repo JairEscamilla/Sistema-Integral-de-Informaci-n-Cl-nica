@@ -17,7 +17,7 @@ typedef struct defDoctores{ // Estructura definida para los datos de un doctor
   struct defDoctores* sig;
 }Doctores;
 
-typedef struct defPacientes{
+typedef struct defPacientes{ // Estructura definida para los datos de un paciente
   int id;
   char Direccion[200];
   int telefono;
