@@ -14,6 +14,7 @@ typedef struct defDoctores{ // Estructura definida para los datos de un doctor
   char ConsultorioAsignado[200];
   char diasConsulta[200];
   char HorarioConsulta[50];
+  char Password[200];
   struct defDoctores* sig;
 }Doctores;
 typedef struct defHistoria{ // Estructura definida para la historia medica de cada paciente
@@ -76,6 +77,7 @@ void leerListaDoctores(Doctores** Lista){
     fprintf(Archivo, "1A\n");
     fprintf(Archivo, "Lunes y Martes\n");
     fprintf(Archivo, "9:00 - 15:00\n");
+    fprintf(Archivo, "12345\n");
     fclose(Archivo);
     Archivo = fopen("doctores.txt", "rt");
   }
@@ -91,6 +93,7 @@ void leerListaDoctores(Doctores** Lista){
     fscanf(Archivo, " %[^\n]", Nuevo->ConsultorioAsignado);
     fscanf(Archivo, " %[^\n]", Nuevo->diasConsulta);
     fscanf(Archivo, " %[^\n]", Nuevo->HorarioConsulta);
+    fscanf(Archivo, " %[^\n]", Nuevo->Password);
     Nuevo->sig = NULL;
     if(*Lista == NULL)
       *Lista = Nuevo;
