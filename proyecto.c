@@ -49,18 +49,30 @@ void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
 void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
+void login(Doctores*);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, GtkWidget *EntryBox);
 void prueba();
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
-  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *entry, *entry2, *label2, *vertical, *boton;
+
   gtk_init(&argc, &argv);
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
+  login(ListaDoctores); // Funcion para desplegar la ventana de login
 
+
+  gtk_main();
+  return 0;
+}
+// Desarrollando las funciones
+
+
+// Ventana para el login
+void login(Doctores* Lista){
+  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *entry, *entry2, *label2, *vertical, *boton;
   // Creando ventana para login
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -94,11 +106,7 @@ int main(int argc, char *argv[]) {
   // Muestra todo de la ventana
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
-
-  gtk_main();
-  return 0;
 }
-// Desarrollando las funciones
 
 // Función para leer la lista de doctores
 void leerListaDoctores(Doctores** Lista){
