@@ -92,6 +92,7 @@ void leerListaDoctores(Doctores** Lista){
   }
   fclose(Archivo);
 }
+// Funcion para leer lista de pacientes
 void leerListaPacientes(Pacientes** Lista){
   int id;
   Pacientes* Nuevo, *temp;
