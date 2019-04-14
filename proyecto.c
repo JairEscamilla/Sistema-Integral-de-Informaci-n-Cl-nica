@@ -16,9 +16,17 @@ typedef struct defDoctores{ // Estructura definida para los datos de un doctor
   char HorarioConsulta[50];
   struct defDoctores* sig;
 }Doctores;
-
+typedef struct defHistoria{ // Estructura definida para la historia medica de cada paciente
+  char id[10];
+  char NombrePaciente[200], NombreDoctor[200];
+  char FechaCita[200];
+  char Diagnostico[200];
+  char Tratamiento[200];
+  char Anotaciones[200];
+  struct defHistoria* sig;
+}Historia;
 typedef struct defPacientes{ // Estructura definida para los datos de un paciente
-  int id;
+  char id[10];
   char Nombre[200];
   char Direccion[200];
   int telefono;
@@ -32,17 +40,20 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   char tipoSangre[10];
   char PadecimientosCronicos[200];
   struct defPacientes* sig;
+  Historia* HClinica;
 }Pacientes;
 
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
+void leerHistorial(Pacientes*);
 // Función principal
 int main(int argc, char const *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
   leerListaDoctores(&ListaDoctores);
   leerListaPacientes(&ListaPacientes);
+  leerHistorial(ListaPacientes);
   return 0;
 }
 // Desarrollando las funciones
@@ -93,15 +104,15 @@ void leerListaDoctores(Doctores** Lista){
 }
 // Funcion para leer lista de pacientes
 void leerListaPacientes(Pacientes** Lista){
-  int id;
+  char id[10];
   Pacientes* Nuevo, *temp;
   FILE* Archivo = fopen("pacientes.txt", "rt");
   if(Archivo == NULL)
     printf("Aún no hay pacientes\n");
   else{
-    while (fscanf(Archivo, "%d", &id) == 1) {
+    while (fscanf(Archivo, " %[^\n]", id) == 1) {
       Nuevo = (Pacientes*)malloc(sizeof(Pacientes));
-      Nuevo->id = id;
+      strcpy(Nuevo->id, id);
       fscanf(Archivo, " %[^\n]", Nuevo->Nombre);
       fscanf(Archivo, " %[^\n]", Nuevo->Direccion);
       fscanf(Archivo, " %d", &Nuevo->telefono);
@@ -115,6 +126,7 @@ void leerListaPacientes(Pacientes** Lista){
       fscanf(Archivo, " %[^\n]", Nuevo->tipoSangre);
       fscanf(Archivo, " %[^\n]", Nuevo->PadecimientosCronicos);
       Nuevo->sig = NULL;
+      Nuevo->HClinica = NULL;
       if(*Lista == NULL)
         *Lista = Nuevo;
       else{
@@ -126,4 +138,41 @@ void leerListaPacientes(Pacientes** Lista){
     }
     fclose(Archivo);
   }
+}
+// Funcion para leer el historial médico de cada paciente
+void leerHistorial(Pacientes* Lista){
+    Pacientes* temp = Lista;
+    Historia* clinic, *temp2;
+    char NombreArchivo[200], id[10];
+    FILE* Archivo;
+    while (temp != NULL) {
+      strcpy(NombreArchivo, temp->id);
+      strcat(NombreArchivo, ".txt");
+      Archivo = fopen(NombreArchivo, "rt");
+      if(Archivo == NULL)
+        printf("El paciente aún no tiene historial\n");
+      else{
+        while(fscanf(Archivo, " %[^\n]", id) == 1){
+          clinic = (Historia*)malloc(sizeof(Historia));
+          strcpy(clinic->id, id);
+          fscanf(Archivo, " %[^\n]", clinic->NombrePaciente);
+          fscanf(Archivo, " %[^\n]", clinic->NombreDoctor);
+          fscanf(Archivo, " %[^\n]", clinic->FechaCita);
+          fscanf(Archivo, " %[^\n]", clinic->Diagnostico);
+          fscanf(Archivo, " %[^\n]", clinic->Tratamiento);
+          fscanf(Archivo, " %[^\n]", clinic->Anotaciones);
+          clinic->sig = NULL;
+          if(temp->HClinica == NULL)
+            temp->HClinica = clinic;
+          else{
+            temp2 = temp->HClinica;
+            while(temp2->sig != NULL)
+              temp2 = temp2->sig;
+            temp2->sig = clinic;
+          }
+        }
+        fclose(Archivo);
+      }
+      temp = temp->sig;
+    }
 }
