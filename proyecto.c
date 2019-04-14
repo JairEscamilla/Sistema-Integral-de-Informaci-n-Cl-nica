@@ -44,7 +44,7 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   Historia* HClinica;
 }Pacientes;
 typedef struct _defParametrosLogin{
-  GtkWidget* entry[2];
+  GtkWidget* entry[2], *window;
   Doctores* Lista;
   int bandera;
 }Login;
@@ -55,35 +55,38 @@ void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
 void iniciarSesion(GtkButton *button, gpointer data);
-void loger(Doctores*, Login*);
+void loger(Doctores*, Login*, int*);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
   Login* Parametros = (Login*)malloc(sizeof(Login));
   gtk_init(&argc, &argv);
+  int h = 0;
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
-  loger(ListaDoctores, Parametros);
-  gtk_main();
+  loger(ListaDoctores, Parametros, &h);
+  if(h == 1){
+    printf("Entrando al sistema\n");
+  }
   g_free(Parametros);
   return 0;
 }
 // Desarrollando las funciones
 
-void loger(Doctores* Lista, Login* Parametros){
+void loger(Doctores* Lista, Login* Parametros, int* band){
   // Creando ventana para login
   Parametros->Lista = Lista;
   Parametros->bandera = 0;
-  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 300, 200);
-  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  gtk_container_border_width(GTK_CONTAINER(window), 15);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
-  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  GtkWidget* label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
+  Parametros->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(Parametros->window), "Sistema de información médica");
+  gtk_widget_set_size_request(Parametros->window, 300, 200);
+  gtk_window_set_resizable(GTK_WINDOW(Parametros->window), FALSE);
+  gtk_container_border_width(GTK_CONTAINER(Parametros->window), 15);
+  gtk_window_set_position(GTK_WINDOW(Parametros->window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(Parametros->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   // Creando las cajas
   horizontal = gtk_hbox_new(TRUE, 5);
   horizontal2 = gtk_hbox_new(TRUE, 5);
@@ -108,8 +111,10 @@ void loger(Doctores* Lista, Login* Parametros){
   gtk_box_pack_start(GTK_BOX(vertical), horizontal2, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal3, TRUE, TRUE, 0);
   // Muestra todo de la ventana
-  gtk_container_add(GTK_CONTAINER(window), vertical);
-  gtk_widget_show_all(window);
+  gtk_container_add(GTK_CONTAINER(Parametros->window), vertical);
+  gtk_widget_show_all(Parametros->window);
+  gtk_main();
+  *band =  Parametros->bandera;
 }
 
 
@@ -271,6 +276,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
     dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha logeado con éxito");
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
+    gtk_widget_destroy(datos->window);
   }
   else{
     dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "No ha sido encontrado en la base de datos):");
