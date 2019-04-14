@@ -19,6 +19,7 @@ typedef struct defDoctores{ // Estructura definida para los datos de un doctor
 
 typedef struct defPacientes{ // Estructura definida para los datos de un paciente
   int id;
+  char Nombre[200];
   char Direccion[200];
   int telefono;
   char sexo;
@@ -30,15 +31,19 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   char alergias[200];
   char tipoSangre[10];
   char PadecimientosCronicos[200];
+  struct defPacientes* sig;
 }Pacientes;
 
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
+void leerListaPacientes(Pacientes**);
 // Función principal
 int main(int argc, char const *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
   leerListaDoctores(&ListaDoctores);
+  leerListaPacientes(&ListaPacientes);
+
   return 0;
 }
 // Desarrollando las funciones
@@ -86,4 +91,39 @@ void leerListaDoctores(Doctores** Lista){
     }
   }
   fclose(Archivo);
+}
+void leerListaPacientes(Pacientes** Lista){
+  int id;
+  Pacientes* Nuevo, *temp;
+  FILE* Archivo = fopen("pacientes.txt", "rt");
+  if(Archivo == NULL)
+    printf("Aún no hay pacientes\n");
+  else{
+    while (fscanf(Archivo, "%d", &id) == 1) {
+      Nuevo = (Pacientes*)malloc(sizeof(Pacientes));
+      Nuevo->id = id;
+      fscanf(Archivo, " %[^\n]", Nuevo->Nombre);
+      fscanf(Archivo, " %[^\n]", Nuevo->Direccion);
+      fscanf(Archivo, " %d", &Nuevo->telefono);
+      fscanf(Archivo, " %c", &Nuevo->sexo);
+      fscanf(Archivo, " %d", &Nuevo->dia);
+      fscanf(Archivo, " %d", &Nuevo->mes);
+      fscanf(Archivo, " %d", &Nuevo->anio);
+      fscanf(Archivo, " %d", &Nuevo->edad);
+      fscanf(Archivo, " %f", &Nuevo->estatura);
+      fscanf(Archivo, " %[^\n]", Nuevo->alergias);
+      fscanf(Archivo, " %[^\n]", Nuevo->tipoSangre);
+      fscanf(Archivo, " %[^\n]", Nuevo->PadecimientosCronicos);
+      Nuevo->sig = NULL;
+      if(*Lista == NULL)
+        *Lista = Nuevo;
+      else{
+        temp = *Lista;
+        while(temp->sig != NULL)
+          temp = temp->sig;
+        temp->sig = Nuevo;
+      }
+    }
+    fclose(Archivo);
+  }
 }
