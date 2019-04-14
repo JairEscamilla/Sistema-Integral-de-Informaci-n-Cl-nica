@@ -44,8 +44,8 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   Historia* HClinica;
 }Pacientes;
 typedef struct defParametrosLogin{
-  GtkWidget* entry, *entry2;
   Doctores* Lista;
+  GtkWidget* entry, *entry2;
 }Login;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -54,7 +54,7 @@ void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
 void login(Doctores*);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
-void prueba();
+void prueba(GtkButton *button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 void login(Doctores* Lista){
   Login Parametros;
   Parametros.Lista = Lista;
+  printf("%s\n", Parametros.Lista->FullName);
   GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
   // Creando ventana para login
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -255,6 +256,8 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     gtk_widget_show(button);
     return button;
 }
-void prueba(){
-  printf("Ha dado click\n");
+void prueba(GtkButton *button, gpointer data){
+  Login *datos = (Login*)data;
+  Doctores* temp = datos->Lista;
+  printf("Ha dado click %s\n", temp->FullName);
 }
