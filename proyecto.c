@@ -48,14 +48,31 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
 void leerHistorial(Pacientes*);
+void destroy(GtkWidget* wideget, gpointer data);
 // Función principal
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
-  leerListaDoctores(&ListaDoctores);
-  leerListaPacientes(&ListaPacientes);
-  leerHistorial(ListaPacientes);
+  GtkWidget* window;
+  gtk_init(&argc, &argv);
+  leerListaDoctores(&ListaDoctores); // Leyendo Doctores
+  leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
+  leerHistorial(ListaPacientes); // Historia clinica de caada paciente
 
+  // Creando ventana para login
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
+  gtk_widget_set_size_request(window, 450, 300);
+  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+  gtk_container_border_width(GTK_CONTAINER(window), 15);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+
+
+
+  // Muestra todo de la ventana
+  gtk_widget_show_all(window);
+  gtk_main();
   return 0;
 }
 // Desarrollando las funciones
@@ -186,4 +203,8 @@ void leerHistorial(Pacientes* Lista){
       }
       temp = temp->sig;
     }
+}
+// Funcion que destruye un widget
+void destroy(GtkWidget* wideget, gpointer data){
+  gtk_main_quit();
 }
