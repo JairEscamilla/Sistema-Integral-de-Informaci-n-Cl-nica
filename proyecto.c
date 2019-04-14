@@ -54,6 +54,7 @@ int main(int argc, char const *argv[]) {
   leerListaDoctores(&ListaDoctores);
   leerListaPacientes(&ListaPacientes);
   leerHistorial(ListaPacientes);
+  printf("%s\n", ListaPacientes->sig->HClinica->NombrePaciente);
   return 0;
 }
 // Desarrollando las funciones
