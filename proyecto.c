@@ -54,7 +54,7 @@ int main(int argc, char const *argv[]) {
   leerListaDoctores(&ListaDoctores);
   leerListaPacientes(&ListaPacientes);
   leerHistorial(ListaPacientes);
-  printf("%s\n", ListaPacientes->sig->HClinica->NombrePaciente);
+
   return 0;
 }
 // Desarrollando las funciones
@@ -109,7 +109,7 @@ void leerListaPacientes(Pacientes** Lista){
   Pacientes* Nuevo, *temp;
   FILE* Archivo = fopen("pacientes.txt", "rt");
   if(Archivo == NULL)
-    printf("Aún no hay pacientes\n");
+    printf("\n");
   else{
     while (fscanf(Archivo, " %[^\n]", id) == 1) {
       Nuevo = (Pacientes*)malloc(sizeof(Pacientes));
@@ -144,14 +144,21 @@ void leerListaPacientes(Pacientes** Lista){
 void leerHistorial(Pacientes* Lista){
     Pacientes* temp = Lista;
     Historia* clinic, *temp2;
+    int i;
     char NombreArchivo[200], id[10];
     FILE* Archivo;
     while (temp != NULL) {
-      strcpy(NombreArchivo, temp->id);
+      i = 0;
+      strcpy(NombreArchivo, temp->Nombre);
+      while (NombreArchivo[i] != '\0') {
+        if(NombreArchivo[i] == ' ')
+          NombreArchivo[i] = '_';
+        i++;
+      }
       strcat(NombreArchivo, ".txt");
       Archivo = fopen(NombreArchivo, "rt");
       if(Archivo == NULL)
-        printf("El paciente aún no tiene historial\n");
+        printf("\n");
       else{
         while(fscanf(Archivo, " %[^\n]", id) == 1){
           clinic = (Historia*)malloc(sizeof(Historia));
