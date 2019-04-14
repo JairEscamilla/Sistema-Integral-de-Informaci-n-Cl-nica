@@ -53,7 +53,7 @@ void destroy(GtkWidget* wideget, gpointer data);
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
-  GtkWidget* window;
+  GtkWidget* window, *label, *vertical, *entry;
   gtk_init(&argc, &argv);
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
@@ -67,11 +67,18 @@ int main(int argc, char *argv[]) {
   gtk_container_border_width(GTK_CONTAINER(window), 15);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
-
-
-
+  // Creando las cajas
+  vertical = gtk_vbox_new(TRUE, 5);
+  // Agregando un label
+  label = gtk_label_new("Nombre del doctor: ");
+  gtk_box_pack_start(GTK_BOX(vertical), label, TRUE, TRUE, 0);
+  // Creando entrybox
+  entry = gtk_entry_new();
+  gtk_box_pack_start(GTK_BOX(vertical), entry, TRUE, TRUE, 0);
   // Muestra todo de la ventana
+  gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
+
   gtk_main();
   return 0;
 }
