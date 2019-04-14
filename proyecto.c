@@ -43,43 +43,36 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   struct defPacientes* sig;
   Historia* HClinica;
 }Pacientes;
-typedef struct defParametrosLogin{
-  Doctores* Lista;
-  GtkWidget* entry, *entry2;
+typedef struct _defParametrosLogin{
+  GtkWidget* entry[2];
 }Login;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
 void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
-void login(Doctores*);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
-void prueba(GtkButton *button, gpointer data);
+void iniciarSesion(GtkButton *button, gpointer data);
+void loger(Doctores*, Login*);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
-
+  Login* Parametros = (Login*)malloc(sizeof(Login));
   gtk_init(&argc, &argv);
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
-  login(ListaDoctores); // Funcion para desplegar la ventana de login
-
-
+  loger(ListaDoctores, Parametros);
   gtk_main();
+  g_free(Parametros);
   return 0;
 }
 // Desarrollando las funciones
 
-
-// Ventana para el login
-void login(Doctores* Lista){
-  Login Parametros;
-  Parametros.Lista = Lista;
-  printf("%s\n", Parametros.Lista->FullName);
-  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
+void loger(Doctores* Lista, Login* Parametros){
   // Creando ventana para login
+  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
   gtk_widget_set_size_request(window, 300, 200);
@@ -96,24 +89,26 @@ void login(Doctores* Lista){
   label = gtk_label_new("Nombre: ");
   gtk_box_pack_start(GTK_BOX(horizontal), label, TRUE, TRUE, 0);
   // Creando entrybox
-  Parametros.entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(horizontal), Parametros.entry, TRUE, TRUE, 0);
+  Parametros->entry[0] = gtk_entry_new();
+  gtk_box_pack_start(GTK_BOX(horizontal), Parametros->entry[0], TRUE, TRUE, 0);
   label2 = gtk_label_new("Password: ");
   gtk_box_pack_start(GTK_BOX(horizontal2), label2, TRUE, TRUE, 0);
-  Parametros.entry2 = gtk_entry_new();
-  gtk_entry_set_visibility (GTK_ENTRY (Parametros.entry2), FALSE);
-  gtk_entry_set_invisible_char (GTK_ENTRY (Parametros.entry2), '*');
+  Parametros->entry[1] = gtk_entry_new();
+  gtk_entry_set_visibility (GTK_ENTRY (Parametros->entry[1]), FALSE);
+  gtk_entry_set_invisible_char (GTK_ENTRY (Parametros->entry[1]), '*');
   // Creando boton
-  boton = AddButton(horizontal3, "Ingresar", prueba);
-  gtk_signal_connect(GTK_OBJECT(boton),"clicked",GTK_SIGNAL_FUNC(prueba),&Parametros);
-  gtk_box_pack_start(GTK_BOX(horizontal2), Parametros.entry2, TRUE, TRUE, 0);
+  boton = AddButton(horizontal3, "Ingresar", iniciarSesion);
+  gtk_signal_connect(GTK_OBJECT(boton),"clicked",GTK_SIGNAL_FUNC(iniciarSesion), (gpointer)Parametros);
+  gtk_box_pack_start(GTK_BOX(horizontal2), Parametros->entry[1], TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal2, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal3, TRUE, TRUE, 0);
   // Muestra todo de la ventana
   gtk_container_add(GTK_CONTAINER(window), vertical);
+
   gtk_widget_show_all(window);
 }
+
 
 // Función para leer la lista de doctores
 void leerListaDoctores(Doctores** Lista){
@@ -256,8 +251,11 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     gtk_widget_show(button);
     return button;
 }
-void prueba(GtkButton *button, gpointer data){
+void iniciarSesion(GtkButton *button, gpointer data){
   Login *datos = (Login*)data;
-  Doctores* temp = datos->Lista;
-  printf("Ha dado click %s\n", temp->FullName);
+  const gchar *nombre;
+  const gchar *Password;
+  nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  Password = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
+  printf("Ha dado click %s\n%s", nombre, Password);
 }
