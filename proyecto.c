@@ -43,14 +43,17 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   struct defPacientes* sig;
   Historia* HClinica;
 }Pacientes;
-
+typedef struct defParametrosLogin{
+  GtkWidget* entry, *entry2;
+  Doctores* Lista;
+}Login;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
 void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
 void login(Doctores*);
-GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, GtkWidget *EntryBox);
+GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
 void prueba();
 // Función principal
 int main(int argc, char *argv[]) {
@@ -72,7 +75,9 @@ int main(int argc, char *argv[]) {
 
 // Ventana para el login
 void login(Doctores* Lista){
-  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *entry, *entry2, *label2, *vertical, *boton;
+  Login Parametros;
+  Parametros.Lista = Lista;
+  GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
   // Creando ventana para login
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -90,16 +95,17 @@ void login(Doctores* Lista){
   label = gtk_label_new("Nombre: ");
   gtk_box_pack_start(GTK_BOX(horizontal), label, TRUE, TRUE, 0);
   // Creando entrybox
-  entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(horizontal), entry, TRUE, TRUE, 0);
+  Parametros.entry = gtk_entry_new();
+  gtk_box_pack_start(GTK_BOX(horizontal), Parametros.entry, TRUE, TRUE, 0);
   label2 = gtk_label_new("Password: ");
   gtk_box_pack_start(GTK_BOX(horizontal2), label2, TRUE, TRUE, 0);
-  entry2 = gtk_entry_new();
-  gtk_entry_set_visibility (GTK_ENTRY (entry2), FALSE);
-  gtk_entry_set_invisible_char (GTK_ENTRY (entry2), '*');
+  Parametros.entry2 = gtk_entry_new();
+  gtk_entry_set_visibility (GTK_ENTRY (Parametros.entry2), FALSE);
+  gtk_entry_set_invisible_char (GTK_ENTRY (Parametros.entry2), '*');
   // Creando boton
-  boton = AddButton(horizontal3, "Ingresar", prueba, entry);
-  gtk_box_pack_start(GTK_BOX(horizontal2), entry2, TRUE, TRUE, 0);
+  boton = AddButton(horizontal3, "Ingresar", prueba);
+  gtk_signal_connect(GTK_OBJECT(boton),"clicked",GTK_SIGNAL_FUNC(prueba),&Parametros);
+  gtk_box_pack_start(GTK_BOX(horizontal2), Parametros.entry2, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal2, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal3, TRUE, TRUE, 0);
@@ -239,13 +245,13 @@ void leerHistorial(Pacientes* Lista){
 void destroy(GtkWidget* wideget, gpointer data){
   gtk_main_quit();
 }
-GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, GtkWidget *EntryBox){
+GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction){
+
     GtkSettings *default_settings = gtk_settings_get_default();
     g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
     GtkWidget *button ;
     button = gtk_button_new_from_stock(GTK_STOCK_OK);
     gtk_box_pack_start(GTK_BOX(theBox),button,FALSE,TRUE, 0);
-    g_signal_connect_swapped(G_OBJECT(button),"clicked",G_CALLBACK(CallBackFunction),(gpointer)EntryBox);
     gtk_widget_show(button);
     return button;
 }
