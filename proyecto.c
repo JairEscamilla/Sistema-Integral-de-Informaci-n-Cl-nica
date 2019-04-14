@@ -3,7 +3,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 // Estructuras de datos
-typedef struct defDoctores{
+typedef struct defDoctores{ // Estructura definida para los datos de un doctor
   char FullName[200];
   char Especialidad1[200];
   char Especialidad2[200];
@@ -17,11 +17,27 @@ typedef struct defDoctores{
   struct defDoctores* sig;
 }Doctores;
 
+typedef struct defPacientes{
+  int id;
+  char Direccion[200];
+  int telefono;
+  char sexo;
+  int dia;
+  int mes;
+  int anio;
+  int edad;
+  float estatura;
+  char alergias[200];
+  char tipoSangre[10];
+  char PadecimientosCronicos[200];
+}Pacientes;
+
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 // Función principal
 int main(int argc, char const *argv[]) {
   Doctores* ListaDoctores = NULL;
+  Pacientes* ListaPacientes = NULL;
   leerListaDoctores(&ListaDoctores);
   return 0;
 }
