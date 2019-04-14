@@ -43,7 +43,6 @@ int main(int argc, char const *argv[]) {
   Pacientes* ListaPacientes = NULL;
   leerListaDoctores(&ListaDoctores);
   leerListaPacientes(&ListaPacientes);
-
   return 0;
 }
 // Desarrollando las funciones
