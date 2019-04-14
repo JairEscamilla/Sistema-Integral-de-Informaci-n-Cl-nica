@@ -45,6 +45,7 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
 }Pacientes;
 typedef struct _defParametrosLogin{
   GtkWidget* entry[2];
+  Doctores* Lista;
 }Login;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -72,6 +73,7 @@ int main(int argc, char *argv[]) {
 
 void loger(Doctores* Lista, Login* Parametros){
   // Creando ventana para login
+  Parametros->Lista = Lista;
   GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -255,7 +257,8 @@ void iniciarSesion(GtkButton *button, gpointer data){
   Login *datos = (Login*)data;
   const gchar *nombre;
   const gchar *Password;
+  Doctores* temp = datos->Lista;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   Password = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
-  printf("Ha dado click %s\n%s", nombre, Password);
+  printf("Ha dado click %s %s %s\n", nombre, Password, temp->FullName);
 }
