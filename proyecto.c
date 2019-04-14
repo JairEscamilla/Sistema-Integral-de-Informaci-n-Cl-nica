@@ -46,6 +46,7 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
 typedef struct _defParametrosLogin{
   GtkWidget* entry[2];
   Doctores* Lista;
+  int bandera;
 }Login;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -74,6 +75,7 @@ int main(int argc, char *argv[]) {
 void loger(Doctores* Lista, Login* Parametros){
   // Creando ventana para login
   Parametros->Lista = Lista;
+  Parametros->bandera = 0;
   GtkWidget* window, *label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -107,7 +109,6 @@ void loger(Doctores* Lista, Login* Parametros){
   gtk_box_pack_start(GTK_BOX(vertical), horizontal3, TRUE, TRUE, 0);
   // Muestra todo de la ventana
   gtk_container_add(GTK_CONTAINER(window), vertical);
-
   gtk_widget_show_all(window);
 }
 
@@ -254,11 +255,28 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     return button;
 }
 void iniciarSesion(GtkButton *button, gpointer data){
+  GtkWidget* dialog;
   Login *datos = (Login*)data;
   const gchar *nombre;
   const gchar *Password;
   Doctores* temp = datos->Lista;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   Password = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
-  printf("Ha dado click %s %s %s\n", nombre, Password, temp->FullName);
+  while (temp != NULL && datos->bandera == 0) {
+    if(strcmp(temp->FullName, nombre) == 0 && strcmp(temp->Password, Password) == 0)
+      datos->bandera = 1;
+    temp = temp->sig;
+  }
+  if(datos->bandera == 1){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha logeado con éxito");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }
+  else{
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "No ha sido encontrado en la base de datos):");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), "");
+    gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
+  }
 }
