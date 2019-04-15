@@ -53,12 +53,13 @@ void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
 void leerHistorial(Pacientes*);
 void destroy(GtkWidget* wideget, gpointer data);
-GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
+GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag);
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
 void entrandoSistema();
 GtkWidget* menu();
 void respuestaMenu(GtkWidget* menu, gpointer data);
+void buscar();
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -109,7 +110,7 @@ void loger(Doctores* Lista, Login* Parametros, int* band){
   gtk_entry_set_visibility (GTK_ENTRY (Parametros->entry[1]), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (Parametros->entry[1]), '*');
   // Creando boton
-  boton = AddButton(horizontal3, "Ingresar", iniciarSesion);
+  boton = AddButton(horizontal3, "Ingresar", iniciarSesion, 0);
   gtk_signal_connect(GTK_OBJECT(boton),"clicked",GTK_SIGNAL_FUNC(iniciarSesion), (gpointer)Parametros);
   gtk_box_pack_start(GTK_BOX(horizontal2), Parametros->entry[1], TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal, TRUE, TRUE, 0);
@@ -253,13 +254,18 @@ void destroy(GtkWidget* wideget, gpointer data){
   gtk_main_quit();
 }
 // Funcion que crea un boton
-GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction){
-
+GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag){
     GtkSettings *default_settings = gtk_settings_get_default();
     g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
-    GtkWidget *button ;
-    button = gtk_button_new_from_stock(GTK_STOCK_OK);
-    gtk_box_pack_start(GTK_BOX(theBox),button,FALSE,TRUE, 0);
+    GtkWidget *button;
+    if(flag == 0){
+      button = gtk_button_new_from_stock(GTK_STOCK_OK);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
+    }
+    if(flag == 1){
+      button = gtk_button_new_from_stock(GTK_STOCK_FIND);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+    }
     gtk_widget_show(button);
     return button;
 }
@@ -293,7 +299,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10];
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[10], *boton;
   char campos[11][200];
   strcpy(campos[0], "Nombre paciente: ");
   strcpy(campos[1], "Direccion: ");
@@ -313,7 +319,7 @@ void entrandoSistema(){
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 700, 600);
+  gtk_widget_set_size_request(window, 600, 600);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
@@ -325,8 +331,14 @@ void entrandoSistema(){
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
     entry[i] = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(horizontales[i]), entry[i], TRUE, TRUE, 0);
+    if(i != 0){
+      invisible[i] = gtk_label_new(NULL);
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+    }
     gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
   }
+  boton = AddButton(horizontales[0], "Buscar", buscar, 1);
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), NULL);
 
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
@@ -400,4 +412,7 @@ GtkWidget* menu(){
     gtk_menu_shell_append(GTK_MENU_SHELL(acercade), acercadeitem);
     gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   return menu;
+}
+void buscar(){
+  printf("Se ha buscado\n");
 }
