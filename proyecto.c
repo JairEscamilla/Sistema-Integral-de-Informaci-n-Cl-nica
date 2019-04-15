@@ -30,24 +30,27 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
   char id[10];
   char Nombre[200];
   char Direccion[200];
-  int telefono;
-  char sexo;
-  int dia;
-  int mes;
-  int anio;
-  int edad;
-  float estatura;
+  char telefono[11];
+  char sexo[10];
+  char edad[15];
+  char fecnac[30];
+  char estatura[10];
   char alergias[200];
   char tipoSangre[10];
   char PadecimientosCronicos[200];
   struct defPacientes* sig;
   Historia* HClinica;
 }Pacientes;
-typedef struct _defParametrosLogin{
+typedef struct _defParametrosLogin{ // Estructura definida para pasar los parametros de login
   GtkWidget* entry[2], *window;
   Doctores* Lista;
   int bandera;
 }Login;
+typedef struct _defListas{ // Estructura definida para pasar como parametro las listas deinamicas
+  Doctores* ListaDoctores;
+  Pacientes* ListaPacientes;
+  GtkWidget* entry[10];
+}ParametrosListas;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
@@ -56,7 +59,7 @@ void destroy(GtkWidget* wideget, gpointer data);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag);
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
-void entrandoSistema();
+void entrandoSistema(ParametrosListas*);
 GtkWidget* menu();
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
@@ -67,16 +70,20 @@ int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
   Login* Parametros = (Login*)malloc(sizeof(Login)); // Parametros para el inicio de sesion
+  ParametrosListas* Plists = (ParametrosListas*)malloc(sizeof(ParametrosListas));
   gtk_init(&argc, &argv);
   int flag = 0; // Bandera para inciar sesión
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
+  Plists->ListaDoctores = ListaDoctores; // Asignamos las listas como parametros para el programa
+  Plists->ListaPacientes = ListaPacientes;
   loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
-    entrandoSistema();
+    entrandoSistema(Plists);
   }
   g_free(Parametros);
+  g_free(Plists);
   return 0;
 }
 // Desarrollando las funciones
@@ -183,13 +190,11 @@ void leerListaPacientes(Pacientes** Lista){
       strcpy(Nuevo->id, id);
       fscanf(Archivo, " %[^\n]", Nuevo->Nombre);
       fscanf(Archivo, " %[^\n]", Nuevo->Direccion);
-      fscanf(Archivo, " %d", &Nuevo->telefono);
-      fscanf(Archivo, " %c", &Nuevo->sexo);
-      fscanf(Archivo, " %d", &Nuevo->dia);
-      fscanf(Archivo, " %d", &Nuevo->mes);
-      fscanf(Archivo, " %d", &Nuevo->anio);
-      fscanf(Archivo, " %d", &Nuevo->edad);
-      fscanf(Archivo, " %f", &Nuevo->estatura);
+      fscanf(Archivo, " %[^\n]", Nuevo->telefono);
+      fscanf(Archivo, " %[^\n]", Nuevo->sexo);
+      fscanf(Archivo, " %[^\n]", Nuevo->fecnac);
+      fscanf(Archivo, " %[^\n]", Nuevo->edad);
+      fscanf(Archivo, " %[^\n]", Nuevo->estatura);
       fscanf(Archivo, " %[^\n]", Nuevo->alergias);
       fscanf(Archivo, " %[^\n]", Nuevo->tipoSangre);
       fscanf(Archivo, " %[^\n]", Nuevo->PadecimientosCronicos);
@@ -312,8 +317,8 @@ void iniciarSesion(GtkButton *button, gpointer data){
   }
 }
 // Funcion que muestra la ventana principal del sistema
-void entrandoSistema(){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[11], *boton, *botonesAbajo[3], *horizontalA;
+void entrandoSistema(ParametrosListas* Listas){
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *botonesAbajo[3], *horizontalA;
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
@@ -335,8 +340,8 @@ void entrandoSistema(){
   for(int i = 0; i < 10; i++){
     label[i] = gtk_label_new(campos[i]);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-    entry[i] = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(horizontales[i]), entry[i], TRUE, TRUE, 0);
+    Listas->entry[i] = gtk_entry_new();
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
     if(i != 0){
       invisible[i] = gtk_label_new(NULL);
       gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
@@ -345,7 +350,7 @@ void entrandoSistema(){
   }
   // Creando boton de busqueda
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
-    gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), NULL);
+    gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   // Creando botones de abajo
   for(int i = 0; i < 3; i++){
     botonesAbajo[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
@@ -427,8 +432,44 @@ GtkWidget* menu(){
     gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   return menu;
 }
-void buscar(){
-  printf("Se ha buscado\n");
+void buscar(GtkWidget* widget, gpointer data){
+  GtkWidget *dialog;
+  const gchar* nombre;
+  int flag = 0;
+  ParametrosListas* datos = (ParametrosListas*)data;
+  Pacientes* temp = datos->ListaPacientes;
+  nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  if(temp == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Aún no hay pacientes registrados");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }else{
+    while (temp != NULL && flag == 0) {
+      if(strcmp(nombre, temp->Nombre) == 0)
+        flag = 1;
+      else
+        temp = temp->sig;
+    }
+    if(flag == 0){
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "No se ha encontrado el paciente");
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(dialog);
+    }else{
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha encontrado con éxito al paciente buscado");
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(dialog);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->Nombre);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), temp->Direccion);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), temp->telefono);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[3]), temp->sexo);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[4]), temp->fecnac);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->edad);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->estatura);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->alergias);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->tipoSangre);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->PadecimientosCronicos);
+    }
+  }
 }
 // Funcion que copia strings de campos
 void copiarStrings(char campos[11][200]){
@@ -443,6 +484,7 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[8], "Tipo de sangre: ");
   strcpy(campos[9], "Padecimientos crónicos");
 }
+// Botones de control de la parte de abajo
 void botonesControlA(){
   printf("Botones de control de abajo\n");
 }

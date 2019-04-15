@@ -1,0 +1,22 @@
+1
+Allan Jair
+Eduardo Arozamena lt.6
+5512754803
+Masculino
+14/junio/2000
+18
+1.75
+Ninguna
+O+
+Ninguno
+2
+Allan Jair2
+Eduardo Arozamena lt.6
+5512754803
+Masculino
+14/agosto/2000
+18
+1.75
+Ninguna
+O+
+Ninguno
