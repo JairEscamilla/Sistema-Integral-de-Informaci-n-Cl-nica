@@ -57,7 +57,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
 void entrandoSistema();
-
+void respuestaMenu(GtkWidget* menu, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -289,7 +289,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
   }
 }
 void entrandoSistema(){
-  GtkWidget* window, *menu, *doctoresitem, *vertical, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem;
+  GtkWidget* window, *menu, *doctoresitem, *vertical, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem, *acercade, *acercadeitem;
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
   // Creando ventana principal
@@ -303,6 +303,7 @@ void entrandoSistema(){
   docs = gtk_menu_new();
   pacientes = gtk_menu_new();
   ayuda = gtk_menu_new();
+  acercade = gtk_menu_new();
   menu = gtk_menu_bar_new();
   // Creando la pestaña de doctores
     doctoresitem = gtk_menu_item_new_with_label("Doctores");
@@ -316,23 +317,56 @@ void entrandoSistema(){
     ayudaitem = gtk_menu_item_new_with_label("Ayuda");
     gtk_menu_item_set_submenu(GTK_MENU_ITEM(ayudaitem), ayuda);
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), ayudaitem);
+  // Creando la pestaña de acerca de
+    acercadeitem = gtk_menu_item_new_with_label("Acerca de...");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(acercadeitem), acercade);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), acercadeitem);
   // Creando los submenus para doctores
     doctoresitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
     gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
     doctoresitem = gtk_menu_item_new_with_label("Listado de doctores");
     gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
     doctoresitem = gtk_menu_item_new_with_label("Desplegar doctores por especialidad");
     gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   // Creando los submenus para pacientes
     pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
     gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
+    gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   // Creando los submenus para ayuda
     ayudaitem = gtk_menu_item_new_with_label("Ayuda general del sistema");
     gtk_menu_shell_append(GTK_MENU_SHELL(ayuda), ayudaitem);
+    gtk_signal_connect(GTK_OBJECT(ayudaitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  // Creando los submenus para acercade
+    acercadeitem = gtk_menu_item_new_with_label("Desarrolladores");
+    gtk_menu_shell_append(GTK_MENU_SHELL(acercade), acercadeitem);
+    gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
 
 
   gtk_box_pack_start(GTK_BOX(vertical), menu, 0, 0, 0);
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
+}
+
+// Funcion para responder a las opciones del menu
+void respuestaMenu(GtkWidget* menu, gpointer data){
+  GtkWidget* dialog;
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Altas/Modificaciones") == 0)
+    printf("Mostrará altas y modificaciones\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Listado de doctores") == 0)
+    printf("Listado de doctores\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar doctores por especialidad") == 0)
+    printf("Desplegar doctores por especialidad\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar lista de pacientes") == 0)
+    printf("Desplegar lista de pacientes\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Ayuda general del sistema") == 0)
+    printf("Ayuda del sistema\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desarrolladores") == 0){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Desarrolladores\nCésar Mauricio Arellano Velasquez\nRaúl González Portillo\nAllan Jair Escamilla Hernández\n");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }
 }
