@@ -56,6 +56,7 @@ void destroy(GtkWidget* wideget, gpointer data);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
+void entrandoSistema();
 
 // Función principal
 int main(int argc, char *argv[]) {
@@ -69,7 +70,7 @@ int main(int argc, char *argv[]) {
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
   loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
-    printf("Entrando al sistema\n");
+    entrandoSistema();
   }
   g_free(Parametros);
   return 0;
@@ -286,4 +287,53 @@ void iniciarSesion(GtkButton *button, gpointer data){
     gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), "");
     gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
   }
+}
+void entrandoSistema(){
+  GtkWidget* window, *menu, *doctoresitem, *vertical, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem;
+  // Creando las cajas
+  vertical = gtk_vbox_new(TRUE, 0);
+  // Creando ventana principal
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
+  gtk_widget_set_size_request(window, 700, 600);
+  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+  gtk_container_border_width(GTK_CONTAINER(window), 15);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  // Creando menu
+  docs = gtk_menu_new();
+  pacientes = gtk_menu_new();
+  ayuda = gtk_menu_new();
+  menu = gtk_menu_bar_new();
+  // Creando la pestaña de doctores
+    doctoresitem = gtk_menu_item_new_with_label("Doctores");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(doctoresitem), docs);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), doctoresitem);
+  // Creando la pestaña de doctores
+    pacientesitem = gtk_menu_item_new_with_label("Pacientes");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(pacientesitem), pacientes);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), pacientesitem);
+  // Creando la pestaña de ayuda
+    ayudaitem = gtk_menu_item_new_with_label("Ayuda");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(ayudaitem), ayuda);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), ayudaitem);
+  // Creando los submenus para doctores
+    doctoresitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
+    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+    doctoresitem = gtk_menu_item_new_with_label("Listado de doctores");
+    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+    doctoresitem = gtk_menu_item_new_with_label("Desplegar doctores por especialidad");
+    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+  // Creando los submenus para pacientes
+    pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
+    gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
+  // Creando los submenus para ayuda
+    ayudaitem = gtk_menu_item_new_with_label("Ayuda general del sistema");
+    gtk_menu_shell_append(GTK_MENU_SHELL(ayuda), ayudaitem);
+
+
+  gtk_box_pack_start(GTK_BOX(vertical), menu, 0, 0, 0);
+  gtk_container_add(GTK_CONTAINER(window), vertical);
+  gtk_widget_show_all(window);
+  gtk_main();
 }
