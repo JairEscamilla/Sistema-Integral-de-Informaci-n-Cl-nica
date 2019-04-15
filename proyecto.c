@@ -57,6 +57,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
 void entrandoSistema();
+GtkWidget* menu();
 void respuestaMenu(GtkWidget* menu, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
@@ -251,6 +252,7 @@ void leerHistorial(Pacientes* Lista){
 void destroy(GtkWidget* wideget, gpointer data){
   gtk_main_quit();
 }
+// Funcion que crea un boton
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction){
 
     GtkSettings *default_settings = gtk_settings_get_default();
@@ -261,6 +263,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     gtk_widget_show(button);
     return button;
 }
+// Funcion que inicia sesion haciendo la comparacion con la lista dinamica
 void iniciarSesion(GtkButton *button, gpointer data){
   GtkWidget* dialog;
   Login *datos = (Login*)data;
@@ -288,8 +291,9 @@ void iniciarSesion(GtkButton *button, gpointer data){
     gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
   }
 }
+// Funcion que muestra la ventana principal del sistema
 void entrandoSistema(){
-  GtkWidget* window, *menu, *doctoresitem, *vertical, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem, *acercade, *acercadeitem;
+  GtkWidget* window, *menuP, *vertical;
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
   // Creando ventana principal
@@ -299,6 +303,36 @@ void entrandoSistema(){
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  menuP = menu(); // Creando el menu
+
+  gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+  gtk_container_add(GTK_CONTAINER(window), vertical);
+  gtk_widget_show_all(window);
+  gtk_main();
+}
+
+// Funcion para responder a las opciones del menu
+void respuestaMenu(GtkWidget* menu, gpointer data){
+  GtkWidget* dialog;
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Altas/Modificaciones") == 0)
+    printf("Mostrará altas y modificaciones\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Listado de doctores") == 0)
+    printf("Listado de doctores\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar doctores por especialidad") == 0)
+    printf("Desplegar doctores por especialidad\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar lista de pacientes") == 0)
+    printf("Desplegar lista de pacientes\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Ayuda general del sistema") == 0)
+    printf("Ayuda del sistema\n");
+  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desarrolladores") == 0){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Desarrolladores\nCésar Mauricio Arellano Velasquez\nRaúl González Portillo\nAllan Jair Escamilla Hernández\n");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }
+}
+// Funcion que crea el menu
+GtkWidget* menu(){
+  GtkWidget* menu, *doctoresitem, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem, *acercade, *acercadeitem;
   // Creando menu
   docs = gtk_menu_new();
   pacientes = gtk_menu_new();
@@ -343,30 +377,5 @@ void entrandoSistema(){
     acercadeitem = gtk_menu_item_new_with_label("Desarrolladores");
     gtk_menu_shell_append(GTK_MENU_SHELL(acercade), acercadeitem);
     gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
-
-
-  gtk_box_pack_start(GTK_BOX(vertical), menu, 0, 0, 0);
-  gtk_container_add(GTK_CONTAINER(window), vertical);
-  gtk_widget_show_all(window);
-  gtk_main();
-}
-
-// Funcion para responder a las opciones del menu
-void respuestaMenu(GtkWidget* menu, gpointer data){
-  GtkWidget* dialog;
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Altas/Modificaciones") == 0)
-    printf("Mostrará altas y modificaciones\n");
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Listado de doctores") == 0)
-    printf("Listado de doctores\n");
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar doctores por especialidad") == 0)
-    printf("Desplegar doctores por especialidad\n");
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desplegar lista de pacientes") == 0)
-    printf("Desplegar lista de pacientes\n");
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Ayuda general del sistema") == 0)
-    printf("Ayuda del sistema\n");
-  if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desarrolladores") == 0){
-    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Desarrolladores\nCésar Mauricio Arellano Velasquez\nRaúl González Portillo\nAllan Jair Escamilla Hernández\n");
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(dialog);
-  }
+  return menu;
 }
