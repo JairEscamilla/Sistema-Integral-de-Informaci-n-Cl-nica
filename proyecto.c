@@ -293,9 +293,23 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(){
-  GtkWidget* window, *menuP, *vertical;
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10];
+  char campos[11][200];
+  strcpy(campos[0], "Nombre paciente: ");
+  strcpy(campos[1], "Direccion: ");
+  strcpy(campos[2], "Telefono: ");
+  strcpy(campos[3], "Sexo: ");
+  strcpy(campos[4], "Fecha de nacimiento: ");
+  strcpy(campos[5], "Edad: ");
+  strcpy(campos[6], "Estatura: ");
+  strcpy(campos[7], "Alergias: ");
+  strcpy(campos[8], "Tipo de sangre: ");
+  strcpy(campos[9], "Padecimientos crónicos");
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
+  for(int i = 0; i < 10; i++){
+    horizontales[i] = gtk_hbox_new(TRUE, 2);
+  }
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -304,8 +318,16 @@ void entrandoSistema(){
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   menuP = menu(); // Creando el menu
-
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+  // Elementos principales de la interfaz
+  for(int i = 0; i < 10; i++){
+    label[i] = gtk_label_new(campos[i]);
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+    entry[i] = gtk_entry_new();
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), entry[i], TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+  }
+
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
