@@ -291,13 +291,12 @@ void iniciarSesion(GtkButton *button, gpointer data){
 void entrandoSistema(){
   GtkWidget* window, *menu, *doctoresitem, *vertical, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem;
   // Creando las cajas
-  vertical = gtk_vbox_new(TRUE, 0);
+  vertical = gtk_vbox_new(0, 0);
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
   gtk_widget_set_size_request(window, 700, 600);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  gtk_container_border_width(GTK_CONTAINER(window), 15);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   // Creando menu
