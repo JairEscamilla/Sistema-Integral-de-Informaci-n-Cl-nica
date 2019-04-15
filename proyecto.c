@@ -56,18 +56,19 @@ void destroy(GtkWidget* wideget, gpointer data);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction);
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
+
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
-  Login* Parametros = (Login*)malloc(sizeof(Login));
+  Login* Parametros = (Login*)malloc(sizeof(Login)); // Parametros para el inicio de sesion
   gtk_init(&argc, &argv);
-  int h = 0;
+  int flag = 0; // Bandera para inciar sesión
   leerListaDoctores(&ListaDoctores); // Leyendo Doctores
   leerListaPacientes(&ListaPacientes); // Leyendo Pacientes
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
-  loger(ListaDoctores, Parametros, &h);
-  if(h == 1){
+  loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
+  if(flag == 1){ // Si se logeo con exito, entramos al sistema
     printf("Entrando al sistema\n");
   }
   g_free(Parametros);
@@ -75,6 +76,8 @@ int main(int argc, char *argv[]) {
 }
 // Desarrollando las funciones
 
+
+// Funcion para desplegar la ventana de inicio de sesion
 void loger(Doctores* Lista, Login* Parametros, int* band){
   // Creando ventana para login
   Parametros->Lista = Lista;
@@ -116,8 +119,6 @@ void loger(Doctores* Lista, Login* Parametros, int* band){
   gtk_main();
   *band =  Parametros->bandera;
 }
-
-
 // Función para leer la lista de doctores
 void leerListaDoctores(Doctores** Lista){
   char Name[200];
