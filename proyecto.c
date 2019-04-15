@@ -313,7 +313,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[10], *boton, *botonesAbajo[3], *horizontalA;
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[11], *boton, *botonesAbajo[3], *horizontalA;
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
@@ -351,7 +351,9 @@ void entrandoSistema(){
     botonesAbajo[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
     gtk_signal_connect(GTK_OBJECT(botonesAbajo[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), NULL);
   }
+  invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
@@ -442,5 +444,5 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[9], "Padecimientos crónicos");
 }
 void botonesControlA(){
-  printf("Botones de control de abajo");
+  printf("Botones de control de abajo\n");
 }
