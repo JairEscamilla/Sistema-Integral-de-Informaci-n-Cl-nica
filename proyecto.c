@@ -285,6 +285,10 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
       button = gtk_button_new_from_stock(GTK_STOCK_NEW);
       gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
     }
+    if(flag == 5){
+      button = gtk_button_new_with_label("Mostrar historial médico");
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+    }
     gtk_widget_show(button);
     return button;
 }
@@ -318,7 +322,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *botonesAbajo[3], *horizontalA;
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *botonesAbajo[4], *horizontalA;
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
@@ -352,7 +356,7 @@ void entrandoSistema(ParametrosListas* Listas){
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   // Creando botones de abajo
-  for(int i = 0; i < 3; i++){
+  for(int i = 0; i < 4; i++){
     botonesAbajo[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
     gtk_signal_connect(GTK_OBJECT(botonesAbajo[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), NULL);
   }
@@ -432,6 +436,7 @@ GtkWidget* menu(){
     gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   return menu;
 }
+// Funcion que busca a un paciente ingresado por el usuario
 void buscar(GtkWidget* widget, gpointer data){
   GtkWidget *dialog;
   const gchar* nombre;
