@@ -60,6 +60,8 @@ void entrandoSistema();
 GtkWidget* menu();
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
+void botonesControlA();
+void copiarStrings(char campos[11][200]);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -266,6 +268,18 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
       button = gtk_button_new_from_stock(GTK_STOCK_FIND);
       gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
     }
+    if(flag == 2){
+      button = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+    }
+    if(flag == 3){
+      button = gtk_button_new_from_stock(GTK_STOCK_ADD);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+    }
+    if(flag == 4){
+      button = gtk_button_new_from_stock(GTK_STOCK_NEW);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+    }
     gtk_widget_show(button);
     return button;
 }
@@ -299,23 +313,15 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[10], *boton;
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *entry[10], *invisible[10], *boton, *botonesAbajo[3], *horizontalA;
   char campos[11][200];
-  strcpy(campos[0], "Nombre paciente: ");
-  strcpy(campos[1], "Direccion: ");
-  strcpy(campos[2], "Telefono: ");
-  strcpy(campos[3], "Sexo: ");
-  strcpy(campos[4], "Fecha de nacimiento: ");
-  strcpy(campos[5], "Edad: ");
-  strcpy(campos[6], "Estatura: ");
-  strcpy(campos[7], "Alergias: ");
-  strcpy(campos[8], "Tipo de sangre: ");
-  strcpy(campos[9], "Padecimientos crónicos");
+  copiarStrings(campos);
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
   for(int i = 0; i < 10; i++){
     horizontales[i] = gtk_hbox_new(TRUE, 2);
   }
+  horizontalA = gtk_hbox_new(TRUE, 2);
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
@@ -337,9 +343,15 @@ void entrandoSistema(){
     }
     gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
   }
-  boton = AddButton(horizontales[0], "Buscar", buscar, 1);
-  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), NULL);
-
+  // Creando boton de busqueda
+    boton = AddButton(horizontales[0], "Buscar", buscar, 1);
+    gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), NULL);
+  // Creando botones de abajo
+  for(int i = 0; i < 3; i++){
+    botonesAbajo[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
+    gtk_signal_connect(GTK_OBJECT(botonesAbajo[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), NULL);
+  }
+  gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
@@ -415,4 +427,20 @@ GtkWidget* menu(){
 }
 void buscar(){
   printf("Se ha buscado\n");
+}
+// Funcion que copia strings de campos
+void copiarStrings(char campos[11][200]){
+  strcpy(campos[0], "Nombre paciente: ");
+  strcpy(campos[1], "Direccion: ");
+  strcpy(campos[2], "Telefono: ");
+  strcpy(campos[3], "Sexo: ");
+  strcpy(campos[4], "Fecha de nacimiento: ");
+  strcpy(campos[5], "Edad: ");
+  strcpy(campos[6], "Estatura: ");
+  strcpy(campos[7], "Alergias: ");
+  strcpy(campos[8], "Tipo de sangre: ");
+  strcpy(campos[9], "Padecimientos crónicos");
+}
+void botonesControlA(){
+  printf("Botones de control de abajo");
 }
