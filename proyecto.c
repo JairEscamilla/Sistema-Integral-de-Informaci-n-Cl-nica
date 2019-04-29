@@ -27,7 +27,6 @@ typedef struct defHistoria{ // Estructura definida para la historia medica de ca
   struct defHistoria* sig;
 }Historia;
 typedef struct defPacientes{ // Estructura definida para los datos de un paciente
-  char id[10];
   char Nombre[200];
   char Direccion[200];
   char telefono[11];
@@ -70,6 +69,7 @@ void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar*
 int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
+void actualizarArchivoPacientes(Pacientes* ListaPacientes);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -184,16 +184,15 @@ void leerListaDoctores(Doctores** Lista){
 }
 // Funcion para leer lista de pacientes
 void leerListaPacientes(Pacientes** Lista){
-  char id[10];
   Pacientes* Nuevo, *temp;
+  char Nombre[200];
   FILE* Archivo = fopen("pacientes.txt", "rt");
   if(Archivo == NULL)
     printf("\n");
   else{
-    while (fscanf(Archivo, " %[^\n]", id) == 1) {
+    while (fscanf(Archivo, " %[^\n]", Nombre) == 1) {
       Nuevo = (Pacientes*)malloc(sizeof(Pacientes));
-      strcpy(Nuevo->id, id);
-      fscanf(Archivo, " %[^\n]", Nuevo->Nombre);
+      strcpy(Nuevo->Nombre, Nombre);
       fscanf(Archivo, " %[^\n]", Nuevo->Direccion);
       fscanf(Archivo, " %[^\n]", Nuevo->telefono);
       fscanf(Archivo, " %[^\n]", Nuevo->sexo);
@@ -569,6 +568,10 @@ void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar*
   strcpy(temp->fecnac, fecnac);
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
+  actualizarArchivoPacientes(ListaPacientes);
+  dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El paciente ha sido actualizado con éxito");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
 }
 int validarLetras(const gchar* cadena, char campo[]){
   GtkWidget* dialog;
@@ -630,4 +633,22 @@ int CalcEdad(int Dia, int Mes, int Anio){
 	Diferencia = NoDias2-NoDias1;
 	Edad = Diferencia / 365;
 	return Edad;
+}
+void actualizarArchivoPacientes(Pacientes* ListaPacientes){
+  Pacientes* temp = ListaPacientes;
+  FILE* Archivo = fopen("pacientes.txt", "wt");
+  while(temp != NULL){
+    fprintf(Archivo, "%s\n", temp->Nombre);
+    fprintf(Archivo, "%s\n", temp->Direccion);
+    fprintf(Archivo, "%s\n", temp->telefono);
+    fprintf(Archivo, "%s\n", temp->sexo);
+    fprintf(Archivo, "%s\n", temp->fecnac);
+    fprintf(Archivo, "%s\n", temp->edad);
+    fprintf(Archivo, "%s\n", temp->estatura);
+    fprintf(Archivo, "%s\n", temp->alergias);
+    fprintf(Archivo, "%s\n", temp->tipoSangre);
+    fprintf(Archivo, "%s\n", temp->PadecimientosCronicos);
+    temp = temp->sig;
+  }
+  fclose(Archivo);
 }
