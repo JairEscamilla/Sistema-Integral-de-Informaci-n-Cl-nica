@@ -66,6 +66,9 @@ void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
+void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Doctores* ListaDoctores);
+int validarNumeros(const gchar* Cadena, char campo[]);
+int validarLetras(const gchar* cadena, char campo[]);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -366,7 +369,6 @@ void entrandoSistema(ParametrosListas* Listas){
        gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
        gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
-
   }
   // Creando boton de busqueda
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
@@ -497,7 +499,7 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[0], "Nombre paciente: ");
   strcpy(campos[1], "Direccion: ");
   strcpy(campos[2], "Telefono: ");
-  strcpy(campos[3], "Sexo: ");
+  strcpy(campos[3], "Sexo (M/F): ");
   strcpy(campos[4], "Fecha de nacimiento: ");
   strcpy(campos[5], "Edad: ");
   strcpy(campos[6], "Estatura: ");
@@ -507,8 +509,71 @@ void copiarStrings(char campos[11][200]){
 }
 // Botones de control de la parte de abajo
 void botonesControlA(GtkButton *button, gpointer data){
-  //ParametrosListas* datos = (ParametrosListas*)data;
+  ParametrosListas* datos = (ParametrosListas*)data;
+  int validacion[7];
   char boton[200];
+  const gchar* nombre, *direccion, *telefono, *sexo, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
+  guint year, month, day;
+  nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
+  telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
+  sexo = gtk_entry_get_text(GTK_ENTRY(datos->entry[3]));
+  estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[6]));
+  alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
+  tipoSangre = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[9]));
+  gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
   strcpy(boton, gtk_button_get_label(button));
-  printf("Botones de control de abajo %s\n", boton);
+  validacion[0] = validarLetras(nombre, "Nombre paciente");
+  validacion[1] = validarNumeros(telefono, "Telefono");
+  validacion[2] = validarLetras(sexo, "Sexo");
+  validacion[3] = validarNumeros(estatura, "Estatura");
+  validacion[4] = validarLetras(alergias, "Alergias");
+  validacion[5] = validarLetras(tipoSangre, "Tipo de sangre");
+  validacion[6] = validarLetras(padecimientosCronicos, "PadecimientosCronicos");
+  for(int i = 0; i < 8; i++)
+    if(validacion[i] == 1)
+      return;
+  month++;
+
+  if(strcmp("gtk-refresh", boton) == 0)
+    modificarPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaDoctores);
+}
+void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Doctores* ListaDoctores){
+  printf("Modificando %d %d %d\n", day, month, year);
+
+}
+int validarLetras(const gchar* cadena, char campo[]){
+  GtkWidget* dialog;
+  int i = 0;
+  int flag = 0;
+  while (cadena[i] != '\0' && flag == 0) {
+    if(!(cadena[i] >= 'a' && cadena[i] <= 'z') && !(cadena[i] >= 'A' && cadena[i] <= 'Z') && cadena[i] != '+' && cadena[i] != '-' && cadena[i] != ' '){
+      printf("%c\n", cadena[i]);
+      printf("%s\n", campo);
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El campo %s solo admite caracteres", campo);
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(dialog);
+      flag = 1;
+    }
+    i++;
+  }
+  return flag;
+}
+int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida numeros
+  GtkWidget* dialog;
+  int i = 0;
+  int Status = 0;
+  while(Cadena[i] != '\0' && Status == 0){
+    if(!(Cadena[i] >= '0' && Cadena[i] <= '9') || (i > 10)){
+      if(Cadena[i] != '.'){
+        dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El campo %s solo admite maximo 10 numeros", campo);
+        gtk_dialog_run(GTK_DIALOG(dialog));
+        gtk_widget_destroy(dialog);
+        Status = 1;
+      }
+    }
+    i++;
+  }
+  return Status;
 }
