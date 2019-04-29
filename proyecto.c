@@ -66,9 +66,10 @@ void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
-void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Doctores* ListaDoctores);
+void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
 int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
+int CalcEdad(int Dia, int Mes, int Anio);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -537,11 +538,37 @@ void botonesControlA(GtkButton *button, gpointer data){
   month++;
 
   if(strcmp("gtk-refresh", boton) == 0)
-    modificarPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaDoctores);
+    modificarPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[4], datos->entry[5]);
 }
-void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Doctores* ListaDoctores){
-  printf("Modificando %d %d %d\n", day, month, year);
-
+void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
+  Pacientes* temp = ListaPacientes;
+  GtkWidget* dialog;
+  char fecnac[200], edadCaracter[10];
+  int edad;
+  while (temp != NULL && strcmp(nombre, temp->Nombre) != 0) {
+    temp = temp->sig;
+  }
+  if(temp == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El paciente no se encuentra en la base de datos");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  strcpy(temp->Nombre, nombre);
+  strcpy(temp->Direccion, direccion);
+  strcpy(temp->telefono, telefono);
+  strcpy(temp->sexo, sexo);
+  strcpy(temp->estatura, estatura);
+  strcpy(temp->alergias, alergias);
+  strcpy(temp->tipoSangre, tipoSangre);
+  strcpy(temp->PadecimientosCronicos, padecimientosCronicos);
+  sprintf(fecnac, "%d/%d/%d", day, month, year);
+  edad = CalcEdad(day, month, year);
+  sprintf(edadCaracter, "%d", edad);
+  strcpy(temp->edad, edadCaracter);
+  strcpy(temp->fecnac, fecnac);
+  gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
+  gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
 }
 int validarLetras(const gchar* cadena, char campo[]){
   GtkWidget* dialog;
@@ -586,4 +613,21 @@ int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida num
     i++;
   }
   return Status;
+}
+int CalcEdad(int Dia, int Mes, int Anio){
+	int NoDias1, NoDias2,Diferencia;
+  int dd, mm, aa, Edad;
+	char Timestamp[200];
+	time_t rawtime;
+  struct tm *timeinfo;
+	time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
+  sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
+
+	NoDias1 = (Anio*365)+(Mes*30)+Dia;
+	NoDias2 = (aa*365)+(mm*30)+dd;
+	Diferencia = NoDias2-NoDias1;
+	Edad = Diferencia / 365;
+	return Edad;
 }
