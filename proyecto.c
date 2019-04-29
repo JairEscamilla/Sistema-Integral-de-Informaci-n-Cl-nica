@@ -50,6 +50,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   Doctores* ListaDoctores;
   Pacientes* ListaPacientes;
   GtkWidget* entry[10];
+  GtkWidget* calendar;
 }ParametrosListas;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -322,12 +323,12 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *horizontalA, *botonesA[4];
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[12], *invisible[11], *boton, *horizontalA, *botonesA[4];
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
-  for(int i = 0; i < 10; i++){
+  for(int i = 0; i < 11; i++){
     horizontales[i] = gtk_hbox_new(TRUE, 2);
   }
   horizontalA = gtk_hbox_new(TRUE, 2);
@@ -341,19 +342,31 @@ void entrandoSistema(ParametrosListas* Listas){
   menuP = menu(); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
   // Elementos principales de la interfaz
-  for(int i = 0; i < 10; i++){
-    label[i] = gtk_label_new(campos[i]);
-    gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-    Listas->entry[i] = gtk_entry_new();
-    gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
-    if(i == 5){
-      gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
+  for(int i = 0; i < 11; i++){
+    if(i < 10){
+      label[i] = gtk_label_new(campos[i]);
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      Listas->entry[i] = gtk_entry_new();
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+
+      if(i == 5 || i == 4){
+        gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
+      }
+      if(i != 0){
+        invisible[i] = gtk_label_new(NULL);
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+      }
+      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+    }else{
+       label[i] = gtk_label_new("Modificar/Crear fecnac: ");
+       gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+       Listas->calendar = gtk_calendar_new();
+       gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->calendar, TRUE, TRUE, 0);
+       label[i] = gtk_label_new(NULL);
+       gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
-    if(i != 0){
-      invisible[i] = gtk_label_new(NULL);
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
-    }
-    gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+
   }
   // Creando boton de busqueda
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
