@@ -547,10 +547,14 @@ int validarLetras(const gchar* cadena, char campo[]){
   GtkWidget* dialog;
   int i = 0;
   int flag = 0;
+  if(cadena[0] == '\0'){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El campo %s no debe estar vacio", campo);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return 1;
+  }
   while (cadena[i] != '\0' && flag == 0) {
     if(!(cadena[i] >= 'a' && cadena[i] <= 'z') && !(cadena[i] >= 'A' && cadena[i] <= 'Z') && cadena[i] != '+' && cadena[i] != '-' && cadena[i] != ' '){
-      printf("%c\n", cadena[i]);
-      printf("%s\n", campo);
       dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El campo %s solo admite caracteres", campo);
       gtk_dialog_run(GTK_DIALOG(dialog));
       gtk_widget_destroy(dialog);
@@ -564,6 +568,12 @@ int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida num
   GtkWidget* dialog;
   int i = 0;
   int Status = 0;
+  if(Cadena[0] == '\0'){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El campo %s no debe estar vacio", campo);
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return 1;
+  }
   while(Cadena[i] != '\0' && Status == 0){
     if(!(Cadena[i] >= '0' && Cadena[i] <= '9') || (i > 10)){
       if(Cadena[i] != '.'){
