@@ -63,7 +63,7 @@ void entrandoSistema(ParametrosListas*);
 GtkWidget* menu();
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
-void botonesControlA();
+void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
 // Función principal
 int main(int argc, char *argv[]) {
@@ -322,7 +322,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *botonesAbajo[4], *horizontalA;
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[10], *invisible[11], *boton, *horizontalA, *botonesA[4];
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
@@ -346,6 +346,9 @@ void entrandoSistema(ParametrosListas* Listas){
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
     Listas->entry[i] = gtk_entry_new();
     gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+    if(i == 5){
+      gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
+    }
     if(i != 0){
       invisible[i] = gtk_label_new(NULL);
       gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
@@ -357,8 +360,8 @@ void entrandoSistema(ParametrosListas* Listas){
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   // Creando botones de abajo
   for(int i = 0; i < 4; i++){
-    botonesAbajo[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
-    gtk_signal_connect(GTK_OBJECT(botonesAbajo[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), NULL);
+    botonesA[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
+    gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
   }
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
@@ -490,6 +493,9 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[9], "Padecimientos crónicos");
 }
 // Botones de control de la parte de abajo
-void botonesControlA(){
-  printf("Botones de control de abajo\n");
+void botonesControlA(GtkButton *button, gpointer data){
+  //ParametrosListas* datos = (ParametrosListas*)data;
+  char boton[200];
+  strcpy(boton, gtk_button_get_label(button));
+  printf("Botones de control de abajo %s\n", boton);
 }
