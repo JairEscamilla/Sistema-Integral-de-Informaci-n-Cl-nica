@@ -328,6 +328,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 void entrandoSistema(ParametrosListas* Listas){
   GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[12], *invisible[11], *boton, *horizontalA, *botonesA[4];
   char campos[11][200];
+  int k = 0;
   copiarStrings(campos);
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
@@ -355,9 +356,14 @@ void entrandoSistema(ParametrosListas* Listas){
       if(i == 5 || i == 4){
         gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
       }
-      if(i != 0){
+      if( i > 4){
         invisible[i] = gtk_label_new(NULL);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+      }
+      if(i >= 1  && i <=4){
+      	botonesA[k] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
+   		gtk_signal_connect(GTK_OBJECT(botonesA[k]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+   		k++;
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }else{
@@ -374,10 +380,7 @@ void entrandoSistema(ParametrosListas* Listas){
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   // Creando botones de abajo
-  for(int i = 0; i < 4; i++){
-    botonesA[i] = AddButton(horizontalA, "Actualizar", botonesControlA, i+2);
-    gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
-  }
+    
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
