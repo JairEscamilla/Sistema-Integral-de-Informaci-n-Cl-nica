@@ -50,6 +50,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   Pacientes* ListaPacientes;
   GtkWidget* entry[13];
   GtkWidget* calendar;
+  int sexo;
 }ParametrosListas;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -84,6 +85,7 @@ int main(int argc, char *argv[]) {
   leerHistorial(ListaPacientes); // Historia clinica de caada paciente
   Plists->ListaDoctores = ListaDoctores; // Asignamos las listas como parametros para el programa
   Plists->ListaPacientes = ListaPacientes;
+  Plists->sexo = 0;
   loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
     entrandoSistema(Plists);
@@ -356,10 +358,10 @@ void entrandoSistema(ParametrosListas* Listas){
         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
         Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
         gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], FALSE, FALSE, 0);
-        gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), NULL);
+        gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
         Listas->entry[4] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
         gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i+1], FALSE, FALSE, 0);
-        gtk_signal_connect(GTK_OBJECT(Listas->entry[i+1]), "toggled", GTK_SIGNAL_FUNC(radio), NULL);
+        gtk_signal_connect(GTK_OBJECT(Listas->entry[i+1]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
         botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
    		  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
       }else{
@@ -673,7 +675,11 @@ void actualizarArchivoPacientes(Pacientes* ListaPacientes){
   fclose(Archivo);
 }
 void radio(GtkToggleButton* button, gpointer data){
-  //char* cad = (char*)data;
-  if(gtk_toggle_button_get_active(button))
-    printf("Se ha cambiado de boton\n");
+  ParametrosListas* datos = (ParametrosListas*)data;
+  if(gtk_toggle_button_get_active(button)){
+    if(datos->sexo == 0)
+      datos->sexo = 1;
+    else
+      datos->sexo = 0;
+  }
 }
