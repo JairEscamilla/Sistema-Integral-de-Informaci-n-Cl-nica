@@ -48,7 +48,7 @@ typedef struct _defParametrosLogin{ // Estructura definida para pasar los parame
 typedef struct _defListas{ // Estructura definida para pasar como parametro las listas deinamicas
   Doctores* ListaDoctores;
   Pacientes* ListaPacientes;
-  GtkWidget* entry[10];
+  GtkWidget* entry[13];
   GtkWidget* calendar;
 }ParametrosListas;
 // Prototipos de las funciones
@@ -70,6 +70,7 @@ int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
 void actualizarArchivoPacientes(Pacientes* ListaPacientes);
+void radio();
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -326,14 +327,16 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[12], *invisible[11], *boton, *horizontalA, *botonesA[4];
+  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[12], *invisible[11], *boton, *horizontalA, *botonesA[5];
   char campos[11][200];
-  int k = 0;
   copiarStrings(campos);
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
   for(int i = 0; i < 11; i++){
-    horizontales[i] = gtk_hbox_new(TRUE, 2);
+    if(i == 3)
+      horizontales[i] = gtk_hbox_new(FALSE, 37);
+    else
+      horizontales[i] = gtk_hbox_new(TRUE, 0);
   }
   horizontalA = gtk_hbox_new(TRUE, 2);
   // Creando ventana principal
@@ -348,10 +351,23 @@ void entrandoSistema(ParametrosListas* Listas){
   // Elementos principales de la interfaz
   for(int i = 0; i < 11; i++){
     if(i < 10){
-      label[i] = gtk_label_new(campos[i]);
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-      Listas->entry[i] = gtk_entry_new();
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+      if(i == 3){
+        label[i] = gtk_label_new("Sexo: ");
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
+        Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], FALSE, FALSE, 0);
+        gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), NULL);
+        Listas->entry[4] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
+        gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i+1], FALSE, FALSE, 0);
+        gtk_signal_connect(GTK_OBJECT(Listas->entry[i+1]), "toggled", GTK_SIGNAL_FUNC(radio), NULL);
+        botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
+   		  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+      }else{
+        label[i] = gtk_label_new(campos[i]);
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+        Listas->entry[i] = gtk_entry_new();
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+      }
 
       if(i == 5 || i == 4){
         gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
@@ -360,10 +376,11 @@ void entrandoSistema(ParametrosListas* Listas){
         invisible[i] = gtk_label_new(NULL);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
       }
-      if(i >= 1  && i <=4){
-      	botonesA[k] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
-   		gtk_signal_connect(GTK_OBJECT(botonesA[k]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
-   		k++;
+      if(i > 0  && i <=4){
+        if(i != 3){
+          botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
+          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+        }
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }else{
@@ -380,7 +397,7 @@ void entrandoSistema(ParametrosListas* Listas){
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   // Creando botones de abajo
-    
+
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
@@ -654,4 +671,7 @@ void actualizarArchivoPacientes(Pacientes* ListaPacientes){
     temp = temp->sig;
   }
   fclose(Archivo);
+}
+void radio(){
+  printf("Here");
 }
