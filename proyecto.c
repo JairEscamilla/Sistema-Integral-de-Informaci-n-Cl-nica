@@ -48,7 +48,7 @@ typedef struct _defParametrosLogin{ // Estructura definida para pasar los parame
 typedef struct _defListas{ // Estructura definida para pasar como parametro las listas deinamicas
   Doctores* ListaDoctores;
   Pacientes* ListaPacientes;
-  GtkWidget* entry[13];
+  GtkWidget* entry[15];
   GtkWidget* calendar;
   int sexo;
 }ParametrosListas;
@@ -294,7 +294,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     }
     if(flag == 5){
       button = gtk_button_new_with_label("Mostrar historial médico");
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
     }
     gtk_widget_show(button);
     return button;
@@ -329,12 +329,12 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[10], *label[12], *invisible[11], *boton, *horizontalA, *botonesA[5];
+  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5];
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
   vertical = gtk_vbox_new(0, 0);
-  for(int i = 0; i < 11; i++){
+  for(int i = 0; i < 12; i++){
     if(i == 3)
       horizontales[i] = gtk_hbox_new(FALSE, 37);
     else
@@ -351,19 +351,23 @@ void entrandoSistema(ParametrosListas* Listas){
   menuP = menu(); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
   // Elementos principales de la interfaz
-  for(int i = 0; i < 11; i++){
-    if(i < 10){
-      if(i == 3){
-        label[i] = gtk_label_new("Sexo: ");
-        gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
-        Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
-        gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], FALSE, FALSE, 0);
+  for(int i = 0; i < 12; i++){
+    if(i < 11){
+      if(i == 3 || i == 4){
+        if(i == 3){
+          label[i] = gtk_label_new("Sexo: ");
+          gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
+        }
+        if(i == 3){
+          Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
+        }else{
+          Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
+          botonesA[i] = AddButton(horizontales[3], "Actualizar", botonesControlA, 4);
+     		  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+        }
         gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
-        Listas->entry[4] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
-        gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i+1], FALSE, FALSE, 0);
-        gtk_signal_connect(GTK_OBJECT(Listas->entry[i+1]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
-        botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
-   		  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
       }else{
         label[i] = gtk_label_new(campos[i]);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
@@ -371,14 +375,14 @@ void entrandoSistema(ParametrosListas* Listas){
         gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
       }
 
-      if(i == 5 || i == 4){
+      if(i == 5   || i == 6){
         gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
       }
       if( i > 4){
         invisible[i] = gtk_label_new(NULL);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
       }
-      if(i > 0  && i <=4){
+      if(i > 0  && i <4){
         if(i != 3){
           botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
           gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
@@ -395,6 +399,7 @@ void entrandoSistema(ParametrosListas* Listas){
        gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
   }
+
   // Creando boton de busqueda
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
@@ -403,6 +408,8 @@ void entrandoSistema(ParametrosListas* Listas){
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
+  botonesA[4] = AddButton(vertical, "Actualizar", botonesControlA, 5);
+  gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
@@ -506,13 +513,22 @@ void buscar(GtkWidget* widget, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->Nombre);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), temp->Direccion);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), temp->telefono);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[3]), temp->sexo);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[4]), temp->fecnac);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->edad);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->estatura);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->alergias);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->tipoSangre);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->PadecimientosCronicos);
+      if(strcmp(temp->sexo, "Masculino") == 0){
+        datos->sexo = 0;
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
+        //gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), FALSE);
+      }else{
+        datos->sexo = 1;
+        printf("here\n");
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
+        //gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
+      }
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->fecnac);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->edad);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->estatura);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->alergias);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->tipoSangre);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), temp->PadecimientosCronicos);
     }
   }
 }
@@ -523,11 +539,12 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[2], "Telefono: ");
   strcpy(campos[3], "Sexo (M/F): ");
   strcpy(campos[4], "Fecha de nacimiento: ");
-  strcpy(campos[5], "Edad: ");
-  strcpy(campos[6], "Estatura: ");
-  strcpy(campos[7], "Alergias: ");
-  strcpy(campos[8], "Tipo de sangre: ");
-  strcpy(campos[9], "Padecimientos crónicos");
+  strcpy(campos[5], "Fecha de nacimiento: ");
+  strcpy(campos[6], "Edad: ");
+  strcpy(campos[7], "Estatura: ");
+  strcpy(campos[8], "Alergias: ");
+  strcpy(campos[9], "Tipo Sangre: ");
+  strcpy(campos[10], "Padecimientos crónicos: ");
 }
 // Botones de control de la parte de abajo
 void botonesControlA(GtkButton *button, gpointer data){
