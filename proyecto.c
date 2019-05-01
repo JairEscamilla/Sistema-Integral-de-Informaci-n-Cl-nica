@@ -70,7 +70,7 @@ int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
 void actualizarArchivoPacientes(Pacientes* ListaPacientes);
-void radio();
+void radio(GtkToggleButton* button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -672,6 +672,8 @@ void actualizarArchivoPacientes(Pacientes* ListaPacientes){
   }
   fclose(Archivo);
 }
-void radio(){
-  printf("Here");
+void radio(GtkToggleButton* button, gpointer data){
+  //char* cad = (char*)data;
+  if(gtk_toggle_button_get_active(button))
+    printf("Se ha cambiado de boton\n");
 }
