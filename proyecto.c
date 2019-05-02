@@ -507,6 +507,15 @@ void buscar(GtkWidget* widget, gpointer data){
       dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "No se ha encontrado el paciente");
       gtk_dialog_run(GTK_DIALOG(dialog));
       gtk_widget_destroy(dialog);
+      datos->nombreBuscado[0] = '\0';
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), "");
     }else{
       dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha encontrado con éxito al paciente buscado");
       gtk_dialog_run(GTK_DIALOG(dialog));
