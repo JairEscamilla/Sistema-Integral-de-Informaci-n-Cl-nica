@@ -51,6 +51,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   GtkWidget* entry[15];
   GtkWidget* calendar;
   int sexo;
+  char nombreBuscado[200];
 }ParametrosListas;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -511,17 +512,16 @@ void buscar(GtkWidget* widget, gpointer data){
       gtk_dialog_run(GTK_DIALOG(dialog));
       gtk_widget_destroy(dialog);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->Nombre);
+      strcpy(datos->nombreBuscado, temp->Nombre);
+      puts(datos->nombreBuscado);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), temp->Direccion);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), temp->telefono);
       if(strcmp(temp->sexo, "Masculino") == 0){
         datos->sexo = 0;
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
-        //gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), FALSE);
       }else{
         datos->sexo = 1;
-        printf("here\n");
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
-        //gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
       }
       gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->fecnac);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->edad);
