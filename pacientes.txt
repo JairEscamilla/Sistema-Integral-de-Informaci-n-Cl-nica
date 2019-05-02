@@ -18,3 +18,13 @@ Masculino
 Ninguna
 O+
 Ninguno
+Ruls
+pon lo que sea
+12345678
+Femenino
+16/6/2000
+18
+2
+Ninguna
+gtk+
+Depresion
