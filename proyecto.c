@@ -67,7 +67,7 @@ void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
-void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
+void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
 int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
@@ -513,7 +513,6 @@ void buscar(GtkWidget* widget, gpointer data){
       gtk_widget_destroy(dialog);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->Nombre);
       strcpy(datos->nombreBuscado, temp->Nombre);
-      puts(datos->nombreBuscado);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), temp->Direccion);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), temp->telefono);
       if(strcmp(temp->sexo, "Masculino") == 0){
@@ -551,39 +550,39 @@ void botonesControlA(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   int validacion[7];
   char boton[200];
-  const gchar* nombre, *direccion, *telefono, *sexo, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
+  int sexo;
+  const gchar* nombre, *direccion, *telefono, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
   guint year, month, day;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
-  sexo = gtk_entry_get_text(GTK_ENTRY(datos->entry[3]));
-  estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[6]));
-  alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
-  tipoSangre = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
-  padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[9]));
+  sexo = datos->sexo;
+  estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
+  alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  tipoSangre = gtk_entry_get_text(GTK_ENTRY(datos->entry[9]));
+  padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
   gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
   strcpy(boton, gtk_button_get_label(button));
   validacion[0] = validarLetras(nombre, "Nombre paciente");
   validacion[1] = validarNumeros(telefono, "Telefono");
-  validacion[2] = validarLetras(sexo, "Sexo");
-  validacion[3] = validarNumeros(estatura, "Estatura");
-  validacion[4] = validarLetras(alergias, "Alergias");
-  validacion[5] = validarLetras(tipoSangre, "Tipo de sangre");
-  validacion[6] = validarLetras(padecimientosCronicos, "PadecimientosCronicos");
-  for(int i = 0; i < 8; i++)
+  validacion[2] = validarNumeros(estatura, "Estatura");
+  validacion[3] = validarLetras(alergias, "Alergias");
+  validacion[4] = validarLetras(tipoSangre, "Tipo de sangre");
+  validacion[5] = validarLetras(padecimientosCronicos, "PadecimientosCronicos");
+  for(int i = 0; i < 6; i++)
     if(validacion[i] == 1)
       return;
   month++;
 
   if(strcmp("gtk-refresh", boton) == 0)
-    modificarPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[4], datos->entry[5]);
+    modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6]);
 }
-void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar* telefono, const gchar* sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
+void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
   Pacientes* temp = ListaPacientes;
   GtkWidget* dialog;
   char fecnac[200], edadCaracter[10];
   int edad;
-  while (temp != NULL && strcmp(nombre, temp->Nombre) != 0) {
+  while (temp != NULL && strcmp(nombreBuscado, temp->Nombre) != 0) {
     temp = temp->sig;
   }
   if(temp == NULL){
@@ -595,7 +594,10 @@ void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar*
   strcpy(temp->Nombre, nombre);
   strcpy(temp->Direccion, direccion);
   strcpy(temp->telefono, telefono);
-  strcpy(temp->sexo, sexo);
+  if(sexo == 0)
+    strcpy(temp->sexo, "Masculino");
+  else
+    strcpy(temp->sexo, "Femenino");
   strcpy(temp->estatura, estatura);
   strcpy(temp->alergias, alergias);
   strcpy(temp->tipoSangre, tipoSangre);
@@ -605,6 +607,7 @@ void modificarPaciente(const gchar* nombre, const gchar* direccion, const gchar*
   sprintf(edadCaracter, "%d", edad);
   strcpy(temp->edad, edadCaracter);
   strcpy(temp->fecnac, fecnac);
+
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
   actualizarArchivoPacientes(ListaPacientes);
