@@ -73,6 +73,7 @@ int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
 void actualizarArchivoPacientes(Pacientes* ListaPacientes);
 void radio(GtkToggleButton* button, gpointer data);
+void limpiarCampos(GtkButton *button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -287,15 +288,19 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     }
     if(flag == 3){
       button = gtk_button_new_from_stock(GTK_STOCK_ADD);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
     }
     if(flag == 4){
       button = gtk_button_new_from_stock(GTK_STOCK_NEW);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
     }
     if(flag == 5){
       button = gtk_button_new_with_label("Mostrar historial médico");
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+    }
+    if(flag == 6){
+      button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
+      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
     }
     gtk_widget_show(button);
     return button;
@@ -330,10 +335,11 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5];
+  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown;
   char campos[11][200];
   copiarStrings(campos);
   // Creando las cajas
+  containerDown = gtk_hbox_new(TRUE, 10);
   vertical = gtk_vbox_new(0, 0);
   for(int i = 0; i < 12; i++){
     if(i == 3)
@@ -345,7 +351,7 @@ void entrandoSistema(ParametrosListas* Listas){
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 600, 600);
+  gtk_widget_set_size_request(window, 600, 650);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
@@ -404,13 +410,19 @@ void entrandoSistema(ParametrosListas* Listas){
   // Creando boton de busqueda
     boton = AddButton(horizontales[0], "Buscar", buscar, 1);
     gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
-  // Creando botones de abajo
+
+    botonesA[4] = AddButton(containerDown, "Actualizar", botonesControlA, 5);
+    gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+    botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
+    gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
+
 
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
-  botonesA[4] = AddButton(vertical, "Actualizar", botonesControlA, 5);
-  gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+  gtk_box_pack_start(GTK_BOX(vertical), containerDown, TRUE, TRUE, 0);
+  invisible[10] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
   gtk_container_add(GTK_CONTAINER(window), vertical);
   gtk_widget_show_all(window);
   gtk_main();
@@ -585,6 +597,10 @@ void botonesControlA(GtkButton *button, gpointer data){
 
   if(strcmp("gtk-refresh", boton) == 0)
     modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6]);
+  if(strcmp("gtk-new", boton) == 0){
+    nuevoPaciente();
+    datos->nombreBuscado[0] = '\0';
+  }
 }
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
   Pacientes* temp = ListaPacientes;
@@ -711,4 +727,12 @@ void radio(GtkToggleButton* button, gpointer data){
     else
       datos->sexo = 0;
   }
+}
+
+void limpiarCampos(GtkButton *button, gpointer data){
+  ParametrosListas* datos = (ParametrosListas*)data;
+  datos->nombreBuscado[0] = '\0';
+  for(int i = 0; i < 11; i++)
+    if(i != 4 && i != 3)
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
 }
