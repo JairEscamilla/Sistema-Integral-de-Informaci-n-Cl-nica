@@ -82,6 +82,7 @@ void actualizarArchivoPacientes(Pacientes* ListaPacientes);
 void radio(GtkToggleButton* button, gpointer data);
 void limpiarCampos(GtkButton *button, gpointer data);
 void generarCita(ParametrosListas* datos, const gchar* nombre);
+void getDate(char date[]);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -865,6 +866,8 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
 void generarCita(ParametrosListas* datos, const gchar* nombre){
   GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[10];
   GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
+  char date[100];
+  getDate(date);
   vertical = gtk_vbox_new(FALSE, 0);
   for(int i = 0; i < 10; i++)
     horizontales[i] = gtk_hbox_new(TRUE, 0);
@@ -884,13 +887,14 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   label[5] = gtk_label_new("Anotaciones: ");
   for(int i = 0; i < 5; i++){
     Entradas->entry[i] = gtk_entry_new();
-    gtk_entry_set_editable(GTK_ENTRY(Entradas->entry[i]), FALSE);
+    if(i == 0 || i == 1 || i == 2)
+      gtk_entry_set_editable(GTK_ENTRY(Entradas->entry[i]), FALSE);
     if(i == 0)
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), nombre);
     if(i == 1)
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), datos->LoggedDoctor);
     if(i == 2)
-      gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), "fecha vrgas");
+      gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), date);
     invisible[i] = gtk_label_new(NULL);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 0);
@@ -906,4 +910,15 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   gtk_widget_show_all(Entradas->window);
   gtk_main();
   g_free(Entradas);
+}
+void getDate(char date[]){
+  int dd, mm, aa;
+	char Timestamp[200];
+	time_t rawtime;
+  struct tm *timeinfo;
+	time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
+  sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
+  sprintf(date, "%d/%d/%d", dd, mm, aa);
 }
