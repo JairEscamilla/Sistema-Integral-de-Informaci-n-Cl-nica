@@ -393,6 +393,7 @@ void entrandoSistema(ParametrosListas* Listas){
             gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O+");
             gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O-");
             gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "AB+");
+            gtk_combo_box_set_active(GTK_COMBO_BOX(Listas->entry[i]), 0);
           }else
             Listas->entry[i] = gtk_entry_new();
         }
@@ -793,8 +794,9 @@ void limpiarCampos(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   datos->nombreBuscado[0] = '\0';
   for(int i = 0; i < 11; i++)
-    if(i != 4 && i != 3)
+    if(i != 4 && i != 3 && i != 9)
       gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
 }
 
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
