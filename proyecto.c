@@ -50,7 +50,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   Pacientes* ListaPacientes;
   GtkWidget* entry[15];
   GtkWidget* calendar;
-  int sexo;
+  int sexo, flag;
   char nombreBuscado[200];
 }ParametrosListas;
 // Prototipos de las funciones
@@ -67,7 +67,7 @@ void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
-void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
+void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera);
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
 int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
@@ -520,6 +520,7 @@ void buscar(GtkWidget* widget, gpointer data){
   int flag = 0, day = 0, month = 0, year = 0;
   ParametrosListas* datos = (ParametrosListas*)data;
   Pacientes* temp = datos->ListaPacientes;
+  datos->flag = 0;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   if(temp == NULL){
     dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Aún no hay pacientes registrados");
@@ -554,11 +555,12 @@ void buscar(GtkWidget* widget, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), temp->Direccion);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), temp->telefono);
       if(strcmp(temp->sexo, "Masculino") == 0){
-        datos->sexo = 0;
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
-      }else{
-        datos->sexo = 1;
+        datos->sexo = 0;
+      }
+      if(strcmp(temp->sexo, "Femenino") == 0){
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
+        datos->sexo = 1;
       }
       gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->fecnac);
       sscanf(temp->fecnac, "%d/%d/%d\n", &day, &month, &year);
@@ -611,6 +613,7 @@ void botonesControlA(GtkButton *button, gpointer data){
   direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
   sexo = datos->sexo;
+  printf("%d\n", sexo);
   estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
@@ -652,13 +655,13 @@ void botonesControlA(GtkButton *button, gpointer data){
   month++;
 
   if(strcmp("gtk-refresh", boton) == 0)
-    modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6]);
+    modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6], datos->flag);
   if(strcmp("gtk-new", boton) == 0){
     nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
     datos->nombreBuscado[0] = '\0';
   }
 }
-void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
+void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera){
   Pacientes* temp = ListaPacientes;
   GtkWidget* dialog;
   char fecnac[200], edadCaracter[10];
@@ -675,9 +678,9 @@ void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gc
   strcpy(temp->Nombre, nombre);
   strcpy(temp->Direccion, direccion);
   strcpy(temp->telefono, telefono);
-  if(sexo == 0)
+  if(sexo == 0 && bandera == 1)
     strcpy(temp->sexo, "Masculino");
-  else
+  if(sexo == 1 && bandera == 1)
     strcpy(temp->sexo, "Femenino");
   strcpy(temp->estatura, estatura);
   strcpy(temp->alergias, alergias);
@@ -782,6 +785,7 @@ void radio(GtkToggleButton* button, gpointer data){
       datos->sexo = 1;
     else
       datos->sexo = 0;
+    datos->flag = 1;
   }
 }
 
