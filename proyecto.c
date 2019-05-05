@@ -613,7 +613,6 @@ void botonesControlA(GtkButton *button, gpointer data){
   direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
   sexo = datos->sexo;
-  printf("%d\n", sexo);
   estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
@@ -841,6 +840,7 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
       temp2 = temp2->sig;
     temp2->sig = temp;
   }
+  actualizarArchivoPacientes(*ListaPacientes);
   dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha agregado de manera correcta el paciente");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
