@@ -864,21 +864,25 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
 }
 void generarCita(ParametrosListas* datos, const gchar* nombre){
-  GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[10];
+  GtkSettings *default_settings = gtk_settings_get_default();
+  g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
+  GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[10], *boton, *titulo;
   GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
   char date[100];
   getDate(date);
+  titulo = gtk_label_new("Generar Cita");
   vertical = gtk_vbox_new(FALSE, 0);
   for(int i = 0; i < 10; i++)
     horizontales[i] = gtk_hbox_new(TRUE, 0);
   Entradas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(Entradas->window), "Sistema de información médica");
-  gtk_widget_set_size_request(Entradas->window, 600, 650);
+  gtk_widget_set_size_request(Entradas->window, 450, 500);
   gtk_window_set_resizable(GTK_WINDOW(Entradas->window), FALSE);
   gtk_window_set_position(GTK_WINDOW(Entradas->window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(Entradas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   menuP = menu(); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), titulo, 0, 0, 0);
   label[0] = gtk_label_new("Paciente: ");
   label[1] = gtk_label_new("Doctor Tratante: ");
   label[2] = gtk_label_new("Fecha de cita: ");
@@ -895,17 +899,21 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), datos->LoggedDoctor);
     if(i == 2)
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), date);
-    invisible[i] = gtk_label_new(NULL);
+    //invisible[i] = gtk_label_new(NULL);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 20);
+    //gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
   }
-
-
-
-
-
+  boton = gtk_button_new_from_stock(GTK_STOCK_OK);
+  invisible[6] = gtk_label_new(NULL);
+  invisible[7] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[6],TRUE,TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(horizontales[6]),boton,TRUE,TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[7],TRUE,TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), horizontales[6],TRUE,TRUE, 0);
+  invisible[8] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[8],TRUE,TRUE, 0);
   gtk_container_add(GTK_CONTAINER(Entradas->window), vertical);
   gtk_widget_show_all(Entradas->window);
   gtk_main();
