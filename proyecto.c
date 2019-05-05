@@ -602,7 +602,7 @@ void botonesControlA(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   int validacion[7];
   char boton[200];
-  int sexo;
+  int sexo, comboActive;
   const gchar* nombre, *direccion, *telefono, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
   guint year, month, day;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
@@ -611,7 +611,30 @@ void botonesControlA(GtkButton *button, gpointer data){
   sexo = datos->sexo;
   estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
-  tipoSangre = gtk_entry_get_text(GTK_ENTRY(datos->entry[9]));
+  comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
+  switch (comboActive) {
+    case 0:
+      tipoSangre = "A+";
+      break;
+    case 1:
+      tipoSangre = "A-";
+      break;
+    case 2:
+      tipoSangre = "B+";
+      break;
+    case 3:
+      tipoSangre = "B-";
+      break;
+    case 4:
+      tipoSangre = "O+";
+      break;
+    case 5:
+      tipoSangre = "O-";
+      break;
+    case 6:
+      tipoSangre = "AB+";
+      break;
+  }
   padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
   gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
   strcpy(boton, gtk_button_get_label(button));
