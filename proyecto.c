@@ -58,6 +58,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
 typedef struct _defGeneraHistoria{
     GtkWidget* entry[10];
     GtkWidget* window;
+    Pacientes* ListaPacientes;
 }GenerarHistoria;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -83,7 +84,9 @@ void radio(GtkToggleButton* button, gpointer data);
 void limpiarCampos(GtkButton *button, gpointer data);
 void generarCita(ParametrosListas* datos, const gchar* nombre);
 void getDate(char date[]);
+void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente);
 void crearCita(GtkWidget* boton, gpointer data);
+void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -869,6 +872,7 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
   GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[3], *boton, *titulo;
   GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
+  Entradas->ListaPacientes = datos->ListaPacientes;
   char date[100];
   getDate(date);
   titulo = gtk_label_new("Generar Cita");
@@ -890,7 +894,7 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   label[3] = gtk_label_new("Diagnostico: ");
   label[4] = gtk_label_new("Tratamiento: ");
   label[5] = gtk_label_new("Anotaciones: ");
-  for(int i = 0; i < 5; i++){
+  for(int i = 0; i < 6; i++){
     Entradas->entry[i] = gtk_entry_new();
     if(i == 0 || i == 1 || i == 2)
       gtk_entry_set_editable(GTK_ENTRY(Entradas->entry[i]), FALSE);
@@ -932,5 +936,89 @@ void getDate(char date[]){
 }
 void crearCita(GtkWidget* boton, gpointer data){
   GenerarHistoria* datos = (GenerarHistoria*)data;
-  printf("Generando historia\n");
+  Historia *Nuevo = (Historia*)malloc(sizeof(Historia));
+  GtkWidget* dialog;
+  int bandera = 0;
+  Pacientes* temp = datos->ListaPacientes;
+  Pacientes* temp2;
+  const gchar* paciente, *doctor, *fechaCita, *diagnostico, *tratamiento, *anotaciones;
+  paciente = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  doctor = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
+  fechaCita = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
+  diagnostico = gtk_entry_get_text(GTK_ENTRY(datos->entry[3]));
+  tratamiento = gtk_entry_get_text(GTK_ENTRY(datos->entry[4]));
+  anotaciones = gtk_entry_get_text(GTK_ENTRY(datos->entry[5]));
+  while (temp != NULL && bandera == 0) {
+    if(strcmp(paciente, temp->Nombre) == 0){
+      bandera = 1;
+      temp2 = temp;
+    }
+    temp = temp->sig;
+  }
+  if(bandera == 0){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "El paciente no ha sido encontrado en la base de datos):");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    gtk_widget_destroy(datos->window);
+    return;
+  }
+  if(diagnostico[0] == '\0' || tratamiento[0] == '\0' || anotaciones[0] == '\0'){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Faltan campos por llenar");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  Nuevo->id[0] = '0';
+  Nuevo->id[1] = '\0';
+  strcpy(Nuevo->NombrePaciente, paciente);
+  strcpy(Nuevo->NombreDoctor, doctor);
+  strcpy(Nuevo->FechaCita, fechaCita);
+  strcpy(Nuevo->Diagnostico, diagnostico);
+  strcpy(Nuevo->Tratamiento, tratamiento);
+  strcpy(Nuevo->Anotaciones, anotaciones);
+  Nuevo->sig = NULL;
+  agregarNodoHistoria(Nuevo, &temp2);
+
+  actualizarArchivoHistoria(temp2->HClinica, paciente);
+  dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha generado la cita de manera exitosa");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+  gtk_widget_destroy(datos->window);
+}
+void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente){
+  char NombreArchivo[100];
+  int i = 0;
+  FILE* Archivo;
+  Historia* temp = HClinica;
+  strcpy(NombreArchivo, paciente);
+  while (NombreArchivo[i] != '\0') {
+    if(NombreArchivo[i] == ' ')
+      NombreArchivo[i] = '_';
+    i++;
+  }
+  strcat(NombreArchivo, ".txt");
+  Archivo = fopen(NombreArchivo, "wt");
+  while (temp != NULL) {
+    fprintf(Archivo, " %s\n", temp->id);
+    fprintf(Archivo, " %s\n", temp->NombrePaciente);
+    fprintf(Archivo, " %s\n", temp->NombreDoctor);
+    fprintf(Archivo, " %s\n", temp->FechaCita);
+    fprintf(Archivo, " %s\n", temp->Diagnostico);
+    fprintf(Archivo, " %s\n", temp->Tratamiento);
+    fprintf(Archivo, " %s\n", temp->Anotaciones);
+    temp = temp->sig;
+  }
+  fclose(Archivo);
+}
+void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
+  Historia* temp3;
+  if((*temp)->HClinica == NULL){
+    (*temp)->HClinica = Nuevo;
+  }else{
+    temp3 = (*temp)->HClinica;
+    while (temp3->sig != NULL) {
+      temp3 = temp3->sig;
+    }
+    temp3->sig = Nuevo;
+  }
 }
