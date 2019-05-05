@@ -83,6 +83,7 @@ void radio(GtkToggleButton* button, gpointer data);
 void limpiarCampos(GtkButton *button, gpointer data);
 void generarCita(ParametrosListas* datos, const gchar* nombre);
 void getDate(char date[]);
+void crearCita(GtkWidget* boton, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -866,7 +867,7 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
 void generarCita(ParametrosListas* datos, const gchar* nombre){
   GtkSettings *default_settings = gtk_settings_get_default();
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
-  GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[10], *boton, *titulo;
+  GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[3], *boton, *titulo;
   GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
   char date[100];
   getDate(date);
@@ -899,21 +900,20 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), datos->LoggedDoctor);
     if(i == 2)
       gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), date);
-    //invisible[i] = gtk_label_new(NULL);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 20);
-    //gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
   }
   boton = gtk_button_new_from_stock(GTK_STOCK_OK);
-  invisible[6] = gtk_label_new(NULL);
-  invisible[7] = gtk_label_new(NULL);
-  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[6],TRUE,TRUE, 0);
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(crearCita), (gpointer)Entradas);
+  invisible[0] = gtk_label_new(NULL);
+  invisible[1] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[0],TRUE,TRUE, 0);
   gtk_box_pack_start(GTK_BOX(horizontales[6]),boton,TRUE,TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[7],TRUE,TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[1],TRUE,TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontales[6],TRUE,TRUE, 0);
-  invisible[8] = gtk_label_new(NULL);
-  gtk_box_pack_start(GTK_BOX(vertical), invisible[8],TRUE,TRUE, 0);
+  invisible[2] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[2],TRUE,TRUE, 0);
   gtk_container_add(GTK_CONTAINER(Entradas->window), vertical);
   gtk_widget_show_all(Entradas->window);
   gtk_main();
@@ -929,4 +929,8 @@ void getDate(char date[]){
   strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
   sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
   sprintf(date, "%d/%d/%d", dd, mm, aa);
+}
+void crearCita(GtkWidget* boton, gpointer data){
+  GenerarHistoria* datos = (GenerarHistoria*)data;
+  printf("Generando historia\n");
 }
