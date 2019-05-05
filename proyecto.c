@@ -43,6 +43,7 @@ typedef struct defPacientes{ // Estructura definida para los datos de un pacient
 typedef struct _defParametrosLogin{ // Estructura definida para pasar los parametros de login
   GtkWidget* entry[2], *window;
   Doctores* Lista;
+  char Doctor[100];
   int bandera;
 }Login;
 typedef struct _defListas{ // Estructura definida para pasar como parametro las listas deinamicas
@@ -52,7 +53,12 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   GtkWidget* calendar;
   int sexo, flag;
   char nombreBuscado[200];
+  char LoggedDoctor[200];
 }ParametrosListas;
+typedef struct _defGeneraHistoria{
+    GtkWidget* entry[10];
+    GtkWidget* window;
+}GenerarHistoria;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
@@ -75,6 +81,7 @@ int CalcEdad(int Dia, int Mes, int Anio);
 void actualizarArchivoPacientes(Pacientes* ListaPacientes);
 void radio(GtkToggleButton* button, gpointer data);
 void limpiarCampos(GtkButton *button, gpointer data);
+void generarCita(ParametrosListas* datos, const gchar* nombre);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -90,6 +97,7 @@ int main(int argc, char *argv[]) {
   Plists->ListaPacientes = ListaPacientes;
   Plists->sexo = 0;
   loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
+  strcpy(Plists->LoggedDoctor, Parametros->Doctor);
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
     entrandoSistema(Plists);
   }
@@ -312,12 +320,15 @@ void iniciarSesion(GtkButton *button, gpointer data){
   Login *datos = (Login*)data;
   const gchar *nombre;
   const gchar *Password;
+  char doc[100];
   Doctores* temp = datos->Lista;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   Password = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   while (temp != NULL && datos->bandera == 0) {
-    if(strcmp(temp->FullName, nombre) == 0 && strcmp(temp->Password, Password) == 0)
+    if(strcmp(temp->FullName, nombre) == 0 && strcmp(temp->Password, Password) == 0){
       datos->bandera = 1;
+      strcpy(doc, temp->FullName);
+    }
     temp = temp->sig;
   }
   if(datos->bandera == 1){
@@ -325,6 +336,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     gtk_widget_destroy(datos->window);
+    strcpy(datos->Doctor, doc);
   }
   else{
     dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "No ha sido encontrado en la base de datos):");
@@ -609,6 +621,7 @@ void botonesControlA(GtkButton *button, gpointer data){
   int sexo, comboActive;
   const gchar* nombre, *direccion, *telefono, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
   guint year, month, day;
+  strcpy(boton, gtk_button_get_label(button));
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
@@ -641,7 +654,6 @@ void botonesControlA(GtkButton *button, gpointer data){
   }
   padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
   gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
-  strcpy(boton, gtk_button_get_label(button));
   validacion[0] = validarLetras(nombre, "Nombre paciente");
   validacion[1] = validarNumeros(telefono, "Telefono");
   validacion[2] = validarNumeros(estatura, "Estatura");
@@ -658,6 +670,10 @@ void botonesControlA(GtkButton *button, gpointer data){
   if(strcmp("gtk-new", boton) == 0){
     nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
     datos->nombreBuscado[0] = '\0';
+  }
+  if(strcmp(boton, "gtk-add") == 0){
+    generarCita(datos, nombre);
+    return;
   }
 }
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera){
@@ -752,7 +768,6 @@ int CalcEdad(int Dia, int Mes, int Anio){
   timeinfo = localtime(&rawtime);
   strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
   sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
-
 	NoDias1 = (Anio*365)+(Mes*30)+Dia;
 	NoDias2 = (aa*365)+(mm*30)+dd;
 	Diferencia = NoDias2-NoDias1;
@@ -846,4 +861,49 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   gtk_widget_destroy(dialog);
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
+}
+void generarCita(ParametrosListas* datos, const gchar* nombre){
+  GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[10];
+  GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
+  vertical = gtk_vbox_new(FALSE, 0);
+  for(int i = 0; i < 10; i++)
+    horizontales[i] = gtk_hbox_new(TRUE, 0);
+  Entradas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(Entradas->window), "Sistema de información médica");
+  gtk_widget_set_size_request(Entradas->window, 600, 650);
+  gtk_window_set_resizable(GTK_WINDOW(Entradas->window), FALSE);
+  gtk_window_set_position(GTK_WINDOW(Entradas->window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(Entradas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  menuP = menu(); // Creando el menu
+  gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+  label[0] = gtk_label_new("Paciente: ");
+  label[1] = gtk_label_new("Doctor Tratante: ");
+  label[2] = gtk_label_new("Fecha de cita: ");
+  label[3] = gtk_label_new("Diagnostico: ");
+  label[4] = gtk_label_new("Tratamiento: ");
+  label[5] = gtk_label_new("Anotaciones: ");
+  for(int i = 0; i < 5; i++){
+    Entradas->entry[i] = gtk_entry_new();
+    gtk_entry_set_editable(GTK_ENTRY(Entradas->entry[i]), FALSE);
+    if(i == 0)
+      gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), nombre);
+    if(i == 1)
+      gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), datos->LoggedDoctor);
+    if(i == 2)
+      gtk_entry_set_text(GTK_ENTRY(Entradas->entry[i]), "fecha vrgas");
+    invisible[i] = gtk_label_new(NULL);
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+  }
+
+
+
+
+
+  gtk_container_add(GTK_CONTAINER(Entradas->window), vertical);
+  gtk_widget_show_all(Entradas->window);
+  gtk_main();
+  g_free(Entradas);
 }
