@@ -384,7 +384,17 @@ void entrandoSistema(ParametrosListas* Listas){
         if(i == 7){
           Listas->entry[i] = gtk_spin_button_new(ajuste, 0.1, 1);
         }else{
-          Listas->entry[i] = gtk_entry_new();
+          if(i == 9){
+            Listas->entry[i] = gtk_combo_box_new_text();
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "AB+");
+          }else
+            Listas->entry[i] = gtk_entry_new();
         }
         gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
       }
@@ -554,7 +564,21 @@ void buscar(GtkWidget* widget, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->edad);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->estatura);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->alergias);
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->tipoSangre);
+      //gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->tipoSangre);
+      if(strcmp(temp->tipoSangre, "A+") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
+      if(strcmp(temp->tipoSangre, "A-") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 1);
+      if(strcmp(temp->tipoSangre, "B+") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 2);
+      if(strcmp(temp->tipoSangre, "B-") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 3);
+      if(strcmp(temp->tipoSangre, "O+") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 4);
+      if(strcmp(temp->tipoSangre, "O-") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 5);
+      if(strcmp(temp->tipoSangre, "AB+") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 6);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), temp->PadecimientosCronicos);
     }
   }
