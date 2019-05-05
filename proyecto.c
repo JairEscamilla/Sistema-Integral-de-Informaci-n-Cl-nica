@@ -517,7 +517,7 @@ GtkWidget* menu(){
 void buscar(GtkWidget* widget, gpointer data){
   GtkWidget *dialog;
   const gchar* nombre;
-  int flag = 0;
+  int flag = 0, day = 0, month = 0, year = 0;
   ParametrosListas* datos = (ParametrosListas*)data;
   Pacientes* temp = datos->ListaPacientes;
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
@@ -561,10 +561,12 @@ void buscar(GtkWidget* widget, gpointer data){
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
       }
       gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->fecnac);
+      sscanf(temp->fecnac, "%d/%d/%d\n", &day, &month, &year);
+      gtk_calendar_select_month(GTK_CALENDAR(datos->calendar), month-1, year);
+      gtk_calendar_select_day(GTK_CALENDAR(datos->calendar), day);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->edad);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->estatura);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->alergias);
-      //gtk_entry_set_text(GTK_ENTRY(datos->entry[9]), temp->tipoSangre);
       if(strcmp(temp->tipoSangre, "A+") == 0)
         gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
       if(strcmp(temp->tipoSangre, "A-") == 0)

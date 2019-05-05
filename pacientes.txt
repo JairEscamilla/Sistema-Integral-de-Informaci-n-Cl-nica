@@ -2,8 +2,8 @@ Allan
 Eduardo Arozamena lt.5
 5512754802
 Masculino
-4/5/2019
-0
+14/7/2000
+18
 1.8
 agua
 A+
@@ -21,12 +21,12 @@ Ninguno
 Ruls
 pon lo que sea
 12345678
-Femenino
+Masculino
 16/6/2000
 18
 2
 Ninguna
-gtk+
+A+
 Depresion
 Erick Misael Escamilla
 direccion chida xd
