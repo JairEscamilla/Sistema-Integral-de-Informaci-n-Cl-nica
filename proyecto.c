@@ -800,8 +800,21 @@ void limpiarCampos(GtkButton *button, gpointer data){
 
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
   Pacientes* temp2 = *ListaPacientes;
+  Pacientes* temp3 = *ListaPacientes;
   Pacientes* temp = (Pacientes*)malloc(sizeof(Pacientes));
   GtkWidget* dialog;
+  int Bandera = 0;
+  while (temp3 != NULL && Bandera == 0) {
+    if(strcmp(temp3->Nombre, nombre) == 0)
+      Bandera = 1;
+    temp3 = temp3->sig;
+  }
+  if(Bandera == 1){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se puede agregar este paciente debido a que ya existe uno con el mismo nombre");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
   char fecnac[200], edadCaracter[10];
   int edad;
   strcpy(temp->Nombre, nombre);
