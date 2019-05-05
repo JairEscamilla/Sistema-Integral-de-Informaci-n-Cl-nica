@@ -2,9 +2,9 @@ Allan
 Eduardo Arozamena lt.5
 5512754802
 Masculino
-2/9/1995
-23
-1.75
+4/5/2000
+19
+1.8
 agua
 O+
 Ninguno
@@ -28,3 +28,13 @@ Femenino
 Ninguna
 gtk+
 Depresion
+Erick Misael Escamilla
+direccion chida xd
+55070665019Masculino
+Masculino
+2/5/1988
+31
+12.26
+Ninguna
+o+
+NInguno

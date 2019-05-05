@@ -337,8 +337,10 @@ void iniciarSesion(GtkButton *button, gpointer data){
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
   GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown;
+  GtkAdjustment *ajuste;
   char campos[11][200];
   copiarStrings(campos);
+  ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.0, 0.2, 2.0, 0));
   // Creando las cajas
   containerDown = gtk_hbox_new(TRUE, 10);
   vertical = gtk_vbox_new(0, 0);
@@ -379,7 +381,11 @@ void entrandoSistema(ParametrosListas* Listas){
       }else{
         label[i] = gtk_label_new(campos[i]);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-        Listas->entry[i] = gtk_entry_new();
+        if(i == 7){
+          Listas->entry[i] = gtk_spin_button_new(ajuste, 0.1, 1);
+        }else{
+          Listas->entry[i] = gtk_entry_new();
+        }
         gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
       }
 
