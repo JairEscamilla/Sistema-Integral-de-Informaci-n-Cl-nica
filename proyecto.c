@@ -1,6 +1,7 @@
 // Incluyendo las funciones
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <gtk/gtk.h>
 // Estructuras de datos
 typedef struct defDoctores{ // Estructura definida para los datos de un doctor
@@ -76,6 +77,8 @@ void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera);
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
+void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo);
+void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo);
 int validarNumeros(const gchar* Cadena, char campo[]);
 int validarLetras(const gchar* cadena, char campo[]);
 int CalcEdad(int Dia, int Mes, int Anio);
@@ -820,6 +823,7 @@ void limpiarCampos(GtkButton *button, gpointer data){
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
   Pacientes* temp2 = *ListaPacientes;
   Pacientes* temp3 = *ListaPacientes;
+  Pacientes* temp4 = *ListaPacientes;
   Pacientes* temp = (Pacientes*)malloc(sizeof(Pacientes));
   GtkWidget* dialog;
   int Bandera = 0;
@@ -853,19 +857,50 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   strcpy(temp->edad, edadCaracter);
   strcpy(temp->fecnac, fecnac);
   temp->sig = NULL;
-  if(temp2 == NULL){
-    *ListaPacientes = temp;
-  }else{
-    while (temp2->sig != NULL)
-      temp2 = temp2->sig;
-    temp2->sig = temp;
-  }
+  while((temp2!=NULL)&&(strcmp(nombre,temp2->Nombre)>0))
+    temp2=temp2->sig;
+
+  if(temp2!=NULL)
+    {
+      if(temp2!=*ListaPacientes)
+	{
+	  while(temp4->sig!=temp2)
+	    temp4=temp4->sig;
+	  temp->sig=temp2;
+	  temp4->sig=temp;
+	}
+      else
+	Inserta_Inicio(ListaPacientes,temp);
+    }
+  else
+    Inserta_Fin(ListaPacientes,temp);
+
   actualizarArchivoPacientes(*ListaPacientes);
   dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha agregado de manera correcta el paciente");
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
+}
+void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo)
+{
+   nuevo->sig=*ListaPacientes;
+  *ListaPacientes=nuevo;
+}
+
+void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo)
+{
+  Pacientes *temp2;
+  nuevo->sig=NULL;
+  if(*ListaPacientes!=NULL)
+    {
+      temp2=*ListaPacientes;
+      while(temp2->sig!=NULL)
+	temp2=temp2->sig;
+      temp2->sig=nuevo;
+    }
+  else
+    *ListaPacientes=nuevo;
 }
 void generarCita(ParametrosListas* datos, const gchar* nombre){
   GtkSettings *default_settings = gtk_settings_get_default();

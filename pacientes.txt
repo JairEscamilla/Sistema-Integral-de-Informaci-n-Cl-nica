@@ -18,3 +18,23 @@ Masculino
 NInguna
 A+
 Ninguna
+Cesar
+Eduardo Arozamena 6
+5570665019
+Masculino
+14/6/2000
+18
+1.8
+Ninguna
+O+
+Ninguno
+Eduardo
+Eduardo Arozamena 6
+5570665019
+Masculino
+14/6/2000
+18
+1.8
+NInguna
+O+
+Ninguno
