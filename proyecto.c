@@ -287,39 +287,49 @@ void destroy(GtkWidget* wideget, gpointer data){
 }
 // Funcion que crea un boton
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag){
-    GtkSettings *default_settings = gtk_settings_get_default();
-    g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
-    GtkWidget *button;
-    if(flag == 0){
-      button = gtk_button_new_from_stock(GTK_STOCK_OK);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
-    }
-    if(flag == 1){
-      button = gtk_button_new_from_stock(GTK_STOCK_FIND);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
-    if(flag == 2){
-      button = gtk_button_new_from_stock(GTK_STOCK_REFRESH);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
-    if(flag == 3){
-      button = gtk_button_new_from_stock(GTK_STOCK_ADD);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 4){
-      button = gtk_button_new_from_stock(GTK_STOCK_NEW);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 5){
-      button = gtk_button_new_with_label("Mostrar historial médico");
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 6){
-      button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
-    gtk_widget_show(button);
-    return button;
+  GtkWidget *ingresar = gtk_image_new_from_file ("Iconos/Ingresar.png");
+  GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
+  GtkWidget *actualizar = gtk_image_new_from_file ("Iconos/Actualizar.png");
+  GtkWidget *nuevacita = gtk_image_new_from_file ("Iconos/NuevaCita.png");
+  GtkWidget *nuevopaciente = gtk_image_new_from_file ("Iconos/NuevoPaciente.png");
+  GtkSettings *default_settings = gtk_settings_get_default();
+  g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
+  GtkWidget *button;
+  if(flag == 0){
+    button = gtk_button_new();
+    gtk_button_set_image (GTK_BUTTON (button), ingresar);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
+  }
+  if(flag == 1){
+    button = gtk_button_new();
+    gtk_button_set_image (GTK_BUTTON (button), buscar);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  if(flag == 2){
+    button = gtk_button_new();
+    gtk_button_set_image (GTK_BUTTON (button), actualizar);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  if(flag == 3){
+    button = gtk_button_new();
+    gtk_button_set_image (GTK_BUTTON (button), nuevacita);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 4){
+    button = gtk_button_new();
+    gtk_button_set_image (GTK_BUTTON (button), nuevopaciente);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 5){
+    button = gtk_button_new_with_label("Mostrar historial médico");
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 6){
+    button = gtk_button_new_from_stock(GTK_STOCK_CLEAR);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  gtk_widget_show(button);
+  return button;
 }
 // Funcion que inicia sesion haciendo la comparacion con la lista dinamica
 void iniciarSesion(GtkButton *button, gpointer data){
