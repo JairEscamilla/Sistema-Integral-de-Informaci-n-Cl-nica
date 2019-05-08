@@ -1,5 +1,6 @@
 // Incluyendo las funciones
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <gtk/gtk.h>
 // Estructuras de datos
