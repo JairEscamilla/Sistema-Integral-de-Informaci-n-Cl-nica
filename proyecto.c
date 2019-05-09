@@ -90,6 +90,7 @@ void getDate(char date[]);
 void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente);
 void crearCita(GtkWidget* boton, gpointer data);
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
+void mostrarHistorial();
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -690,6 +691,7 @@ void botonesControlA(GtkButton *button, gpointer data){
   sexo = datos->sexo;
   estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  printf("%s\n", boton);
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
   switch (comboActive) {
   case 0:
@@ -736,6 +738,9 @@ void botonesControlA(GtkButton *button, gpointer data){
   if(strcmp(boton, "NuevaCita") == 0){
     generarCita(datos, nombre);
     return;
+  }
+  if(strcmp("Historial", boton) == 0){
+    mostrarHistorial();
   }
 }
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera){
@@ -1110,4 +1115,16 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
     }
     temp3->sig = Nuevo;
   }
+}
+void mostrarHistorial(){
+  printf("Mostrando historial medico\n");
+  GtkWidget* window;
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Mostrar Historial Médico");
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_widget_set_size_request (window, 500, 400);
+  g_signal_connect (G_OBJECT (window), "destroy",G_CALLBACK (gtk_main_quit), NULL);
+  gtk_widget_show_all(window);
+  gtk_main();
 }
