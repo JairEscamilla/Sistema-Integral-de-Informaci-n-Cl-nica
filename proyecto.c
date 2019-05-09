@@ -361,7 +361,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
     gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
   }
-    
+
   gtk_widget_show(button);
   return button;
 }
@@ -419,13 +419,13 @@ void entrandoSistema(ParametrosListas* Listas){
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 600, 768);
+  gtk_widget_set_size_request(window, 600, 650);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   menuP = menu(); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
-  
+
   cajatitulo = gtk_hbox_new (TRUE, 0); //Creando la caja del encabezado
   titulo = gtk_label_new ("Administración de pacientes"); //Creando el encabezado
   gtk_misc_set_alignment (GTK_MISC(titulo), 0.05, 0.5); //Alineando a la izquierda
@@ -433,7 +433,7 @@ void entrandoSistema(ParametrosListas* Listas){
   gtk_label_set_attributes(GTK_LABEL(titulo), attrlist); //Asignando atributos a título
   gtk_box_pack_start (GTK_BOX (cajatitulo), titulo, TRUE, TRUE, 0); //Título -> CajaTitulo
   gtk_box_pack_start (GTK_BOX (vertical), cajatitulo, TRUE, TRUE, 20); //CajaTitulo -> Vertical
-  
+
   // Elementos principales de la interfaz
   for(int i = 0; i < 12; i++){
     if(i < 11){
@@ -683,7 +683,7 @@ void botonesControlA(GtkButton *button, gpointer data){
   int sexo, comboActive;
   const gchar* nombre, *direccion, *telefono, *estatura, *alergias, *tipoSangre, *padecimientosCronicos;
   guint year, month, day;
-  strcpy(boton, gtk_button_get_label(button));
+  strcpy(boton, gtk_widget_get_name(GTK_WIDGET(gtk_button_get_image(button))));
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
   direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
   telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
@@ -727,13 +727,13 @@ void botonesControlA(GtkButton *button, gpointer data){
       return;
   month++;
 
-  if(strcmp("gtk-refresh", boton) == 0)
+  if(strcmp("Actualizar", boton) == 0)
     modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6], datos->flag);
-  if(strcmp("gtk-new", boton) == 0){
+  if(strcmp("NuevoPaciente", boton) == 0){
     nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
-    datos->nombreBuscado[0] = '\0';
+    strcpy(datos->nombreBuscado, nombre);
   }
-  if(strcmp(boton, "gtk-add") == 0){
+  if(strcmp(boton, "NuevaCita") == 0){
     generarCita(datos, nombre);
     return;
   }
