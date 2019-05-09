@@ -405,7 +405,7 @@ void entrandoSistema(ParametrosListas* Listas){
   GtkAdjustment *ajuste;
   char campos[11][200];
   copiarStrings(campos);
-  ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.0, 0.2, 2.0, 0));
+  ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.5, 0.2, 2.5, 0));
   // Creando las cajas
   containerDown = gtk_hbox_new(TRUE, 10);
   vertical = gtk_vbox_new(0, 0);
