@@ -57,9 +57,9 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   char LoggedDoctor[200];
 }ParametrosListas;
 typedef struct _defGeneraHistoria{
-    GtkWidget* entry[10];
-    GtkWidget* window;
-    Pacientes* ListaPacientes;
+  GtkWidget* entry[10];
+  GtkWidget* window;
+  Pacientes* ListaPacientes;
 }GenerarHistoria;
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
@@ -118,13 +118,16 @@ int main(int argc, char *argv[]) {
 
 // Funcion para desplegar la ventana de inicio de sesion
 void loger(Doctores* Lista, Login* Parametros, int* band){
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
+  pango_attr_list_insert(attrlist, attr);
   // Creando ventana para login
   Parametros->Lista = Lista;
   Parametros->bandera = 0;
-  GtkWidget* label, *horizontal, *horizontal2, *horizontal3, *label2, *vertical, *boton;
+  GtkWidget *label, *horizontal, *horizontal2, *horizontal3, *horizontal4, *label2, *vertical, *boton, *titulo;
   Parametros->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(Parametros->window), "Sistema de información médica");
-  gtk_widget_set_size_request(Parametros->window, 300, 200);
+  gtk_widget_set_size_request(Parametros->window, 300, 260);
   gtk_window_set_resizable(GTK_WINDOW(Parametros->window), FALSE);
   gtk_container_border_width(GTK_CONTAINER(Parametros->window), 15);
   gtk_window_set_position(GTK_WINDOW(Parametros->window), GTK_WIN_POS_CENTER_ALWAYS);
@@ -133,25 +136,35 @@ void loger(Doctores* Lista, Login* Parametros, int* band){
   horizontal = gtk_hbox_new(TRUE, 5);
   horizontal2 = gtk_hbox_new(TRUE, 5);
   horizontal3 = gtk_hbox_new(TRUE, 5);
-  vertical = gtk_vbox_new(TRUE, 2);
+  horizontal4 = gtk_hbox_new(TRUE, 5);
+  vertical = gtk_vbox_new(TRUE, 5);
+  titulo = gtk_label_new ("Iniciar sesión");
+  gtk_misc_set_alignment (GTK_MISC(titulo), 0, 0.5);
+  pango_attr_list_insert(attrlist, attr);
+  gtk_label_set_attributes(GTK_LABEL(titulo), attrlist);
+  //pango_attr_list_unref(attrlist); <- En el código que encontre estaba esta linea, pero dejarla sin comentar da un segmentation fault.
+  gtk_box_pack_start (GTK_BOX (horizontal), titulo, TRUE, TRUE, 10);
   // Agregando un label
-  label = gtk_label_new("Nombre: ");
-  gtk_box_pack_start(GTK_BOX(horizontal), label, TRUE, TRUE, 0);
+  label = gtk_label_new("Nombre:");
+  gtk_misc_set_alignment (GTK_MISC(label), 0, 0.5);
+  gtk_box_pack_start(GTK_BOX(horizontal2), label, TRUE, TRUE, 10);
   // Creando entrybox
   Parametros->entry[0] = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(horizontal), Parametros->entry[0], TRUE, TRUE, 0);
-  label2 = gtk_label_new("Password: ");
-  gtk_box_pack_start(GTK_BOX(horizontal2), label2, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(horizontal2), Parametros->entry[0], TRUE, TRUE, 5);
+  label2 = gtk_label_new("Contraseña:");
+  gtk_misc_set_alignment (GTK_MISC(label2), 0, 0.5);
+  gtk_box_pack_start(GTK_BOX(horizontal3), label2, TRUE, TRUE, 10);
   Parametros->entry[1] = gtk_entry_new();
   gtk_entry_set_visibility (GTK_ENTRY (Parametros->entry[1]), FALSE);
   gtk_entry_set_invisible_char (GTK_ENTRY (Parametros->entry[1]), '*');
   // Creando boton
-  boton = AddButton(horizontal3, "Ingresar", iniciarSesion, 0);
+  boton = AddButton(horizontal4, "Ingresar", iniciarSesion, 0);
   gtk_signal_connect(GTK_OBJECT(boton),"clicked",GTK_SIGNAL_FUNC(iniciarSesion), (gpointer)Parametros);
-  gtk_box_pack_start(GTK_BOX(horizontal2), Parametros->entry[1], TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(horizontal3), Parametros->entry[1], TRUE, TRUE, 5);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal2, TRUE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vertical), horizontal3, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), horizontal4, TRUE, TRUE, 0);
   // Muestra todo de la ventana
   gtk_container_add(GTK_CONTAINER(Parametros->window), vertical);
   gtk_widget_show_all(Parametros->window);
@@ -240,47 +253,47 @@ void leerListaPacientes(Pacientes** Lista){
 }
 // Funcion para leer el historial médico de cada paciente
 void leerHistorial(Pacientes* Lista){
-    Pacientes* temp = Lista;
-    Historia* clinic, *temp2;
-    int i;
-    char NombreArchivo[200], id[10];
-    FILE* Archivo;
-    while (temp != NULL) {
-      i = 0;
-      strcpy(NombreArchivo, temp->Nombre);
-      while (NombreArchivo[i] != '\0') {
-        if(NombreArchivo[i] == ' ')
-          NombreArchivo[i] = '_';
-        i++;
-      }
-      strcat(NombreArchivo, ".txt");
-      Archivo = fopen(NombreArchivo, "rt");
-      if(Archivo == NULL)
-        printf("\n");
-      else{
-        while(fscanf(Archivo, " %[^\n]", id) == 1){
-          clinic = (Historia*)malloc(sizeof(Historia));
-          strcpy(clinic->id, id);
-          fscanf(Archivo, " %[^\n]", clinic->NombrePaciente);
-          fscanf(Archivo, " %[^\n]", clinic->NombreDoctor);
-          fscanf(Archivo, " %[^\n]", clinic->FechaCita);
-          fscanf(Archivo, " %[^\n]", clinic->Diagnostico);
-          fscanf(Archivo, " %[^\n]", clinic->Tratamiento);
-          fscanf(Archivo, " %[^\n]", clinic->Anotaciones);
-          clinic->sig = NULL;
-          if(temp->HClinica == NULL)
-            temp->HClinica = clinic;
-          else{
-            temp2 = temp->HClinica;
-            while(temp2->sig != NULL)
-              temp2 = temp2->sig;
-            temp2->sig = clinic;
-          }
-        }
-        fclose(Archivo);
-      }
-      temp = temp->sig;
+  Pacientes* temp = Lista;
+  Historia* clinic, *temp2;
+  int i;
+  char NombreArchivo[200], id[10];
+  FILE* Archivo;
+  while (temp != NULL) {
+    i = 0;
+    strcpy(NombreArchivo, temp->Nombre);
+    while (NombreArchivo[i] != '\0') {
+      if(NombreArchivo[i] == ' ')
+	NombreArchivo[i] = '_';
+      i++;
     }
+    strcat(NombreArchivo, ".txt");
+    Archivo = fopen(NombreArchivo, "rt");
+    if(Archivo == NULL)
+      printf("\n");
+    else{
+      while(fscanf(Archivo, " %[^\n]", id) == 1){
+	clinic = (Historia*)malloc(sizeof(Historia));
+	strcpy(clinic->id, id);
+	fscanf(Archivo, " %[^\n]", clinic->NombrePaciente);
+	fscanf(Archivo, " %[^\n]", clinic->NombreDoctor);
+	fscanf(Archivo, " %[^\n]", clinic->FechaCita);
+	fscanf(Archivo, " %[^\n]", clinic->Diagnostico);
+	fscanf(Archivo, " %[^\n]", clinic->Tratamiento);
+	fscanf(Archivo, " %[^\n]", clinic->Anotaciones);
+	clinic->sig = NULL;
+	if(temp->HClinica == NULL)
+	  temp->HClinica = clinic;
+	else{
+	  temp2 = temp->HClinica;
+	  while(temp2->sig != NULL)
+	    temp2 = temp2->sig;
+	  temp2->sig = clinic;
+	}
+      }
+      fclose(Archivo);
+    }
+    temp = temp->sig;
+  }
 }
 // Funcion que destruye un widget
 void destroy(GtkWidget* wideget, gpointer data){
@@ -288,69 +301,69 @@ void destroy(GtkWidget* wideget, gpointer data){
 }
 // Funcion que crea un boton
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag){
-    GtkSettings *default_settings = gtk_settings_get_default();
-    g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
-    GtkWidget *ingresar = gtk_image_new_from_file ("Iconos/Ingresar.png");
-    gtk_widget_set_name (ingresar, "Ingresar");
-    GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
-    gtk_widget_set_name (buscar, "Buscar");
-    GtkWidget *actualizar = gtk_image_new_from_file ("Iconos/Actualizar.png");
-    gtk_widget_set_name (actualizar, "Actualizar");
-    GtkWidget *nuevacita = gtk_image_new_from_file ("Iconos/NuevaCita.png");
-    gtk_widget_set_name (nuevacita, "NuevaCita");
-    GtkWidget *nuevopaciente = gtk_image_new_from_file ("Iconos/NuevoPaciente.png");
-    gtk_widget_set_name (nuevopaciente, "NuevoPaciente");
-    GtkWidget *historial = gtk_image_new_from_file ("Iconos/Historial.png");
-    gtk_widget_set_name (historial, "Historial");
-    GtkWidget *vaciar = gtk_image_new_from_file ("Iconos/Vaciar.png");
-    gtk_widget_set_name (vaciar, "Vaciar");
-    GtkWidget *button;
+  GtkSettings *default_settings = gtk_settings_get_default();
+  g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
+  GtkWidget *ingresar = gtk_image_new_from_file ("Iconos/Ingresar.png");
+  gtk_widget_set_name (ingresar, "Ingresar");
+  GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
+  gtk_widget_set_name (buscar, "Buscar");
+  GtkWidget *actualizar = gtk_image_new_from_file ("Iconos/Actualizar.png");
+  gtk_widget_set_name (actualizar, "Actualizar");
+  GtkWidget *nuevacita = gtk_image_new_from_file ("Iconos/NuevaCita.png");
+  gtk_widget_set_name (nuevacita, "NuevaCita");
+  GtkWidget *nuevopaciente = gtk_image_new_from_file ("Iconos/NuevoPaciente.png");
+  gtk_widget_set_name (nuevopaciente, "NuevoPaciente");
+  GtkWidget *historial = gtk_image_new_from_file ("Iconos/Historial.png");
+  gtk_widget_set_name (historial, "Historial");
+  GtkWidget *vaciar = gtk_image_new_from_file ("Iconos/Vaciar.png");
+  gtk_widget_set_name (vaciar, "Vaciar");
+  GtkWidget *button;
 
-    if(flag == 0){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), ingresar);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
-    }
-    if(flag == 1){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), buscar);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
-    if(flag == 2){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), actualizar);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
-    if(flag == 3){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), nuevacita);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 4){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), nuevopaciente);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 5){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), historial);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
-    }
-    if(flag == 6){
-      button = gtk_button_new_with_label("");
-      gtk_button_set_image (GTK_BUTTON (button), vaciar);
-      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-      gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
-    }
+  if(flag == 0){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), ingresar);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 0);
+  }
+  if(flag == 1){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), buscar);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  if(flag == 2){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), actualizar);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  if(flag == 3){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), nuevacita);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 4){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), nuevopaciente);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 5){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), historial);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
+  }
+  if(flag == 6){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), vaciar);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
     
- gtk_widget_show(button);
-    return button;
+  gtk_widget_show(button);
+  return button;
 }
 // Funcion que inicia sesion haciendo la comparacion con la lista dinamica
 void iniciarSesion(GtkButton *button, gpointer data){
@@ -386,7 +399,9 @@ void iniciarSesion(GtkButton *button, gpointer data){
 }
 // Funcion que muestra la ventana principal del sistema
 void entrandoSistema(ParametrosListas* Listas){
-  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown;
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
+  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
   GtkAdjustment *ajuste;
   char campos[11][200];
   copiarStrings(campos);
@@ -404,28 +419,37 @@ void entrandoSistema(ParametrosListas* Listas){
   // Creando ventana principal
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 600, 650);
+  gtk_widget_set_size_request(window, 600, 700);
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   menuP = menu(); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+  
+  cajatitulo = gtk_hbox_new (TRUE, 0); //Creando la caja del encabezado
+  titulo = gtk_label_new ("Administración de pacientes"); //Creando el encabezado
+  gtk_misc_set_alignment (GTK_MISC(titulo), 0.05, 0.5); //Alineando a la izquierda
+  pango_attr_list_insert(attrlist, attr); //Llamando a la lista de atributos
+  gtk_label_set_attributes(GTK_LABEL(titulo), attrlist); //Asignando atributos a título
+  gtk_box_pack_start (GTK_BOX (cajatitulo), titulo, TRUE, TRUE, 0); //Título -> CajaTitulo
+  gtk_box_pack_start (GTK_BOX (vertical), cajatitulo, TRUE, TRUE, 20); //CajaTitulo -> Vertical
+  
   // Elementos principales de la interfaz
   for(int i = 0; i < 12; i++){
     if(i < 11){
       if(i == 3 || i == 4){
         if(i == 3){
           label[i] = gtk_label_new("Sexo: ");
-          gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
+	  gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
         }
         if(i == 3){
           Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
-          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 35);
         }else{
           Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
-          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 15);
           botonesA[i] = AddButton(horizontales[3], "Actualizar", botonesControlA, 4);
-     		  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+	  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
         }
         gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
       }else{
@@ -453,7 +477,7 @@ void entrandoSistema(ParametrosListas* Listas){
       if(i == 5   || i == 6){
         gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
       }
-      if( i > 4){
+      if(i > 4){
         invisible[i] = gtk_label_new(NULL);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
       }
@@ -465,24 +489,24 @@ void entrandoSistema(ParametrosListas* Listas){
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }else{
-       label[i] = gtk_label_new("Modificar/Crear fecnac: ");
-       gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-       Listas->calendar = gtk_calendar_new();
-       gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->calendar, TRUE, TRUE, 0);
-       label[i] = gtk_label_new(NULL);
-       gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+      label[i] = gtk_label_new("Modificar/Crear fecnac: ");
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      Listas->calendar = gtk_calendar_new();
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->calendar, TRUE, TRUE, 0);
+      label[i] = gtk_label_new(NULL);
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
   }
 
   // Creando boton de busqueda
-    boton = AddButton(horizontales[0], "Buscar", buscar, 1);
-    gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
+  boton = AddButton(horizontales[0], "Buscar", buscar, 1);
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
 
-    botonesA[4] = AddButton(containerDown, "Actualizar", botonesControlA, 5);
-    gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
-    botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
-    gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
+  botonesA[4] = AddButton(containerDown, "Actualizar", botonesControlA, 5);
+  gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+  botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
+  gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
 
 
   invisible[10] = gtk_label_new(NULL);
@@ -525,43 +549,43 @@ GtkWidget* menu(){
   acercade = gtk_menu_new();
   menu = gtk_menu_bar_new();
   // Creando la pestaña de doctores
-    doctoresitem = gtk_menu_item_new_with_label("Doctores");
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(doctoresitem), docs);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), doctoresitem);
+  doctoresitem = gtk_menu_item_new_with_label("Doctores");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(doctoresitem), docs);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), doctoresitem);
   // Creando la pestaña de doctores
-    pacientesitem = gtk_menu_item_new_with_label("Pacientes");
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(pacientesitem), pacientes);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), pacientesitem);
+  pacientesitem = gtk_menu_item_new_with_label("Pacientes");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(pacientesitem), pacientes);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), pacientesitem);
   // Creando la pestaña de ayuda
-    ayudaitem = gtk_menu_item_new_with_label("Ayuda");
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(ayudaitem), ayuda);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), ayudaitem);
+  ayudaitem = gtk_menu_item_new_with_label("Ayuda");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(ayudaitem), ayuda);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), ayudaitem);
   // Creando la pestaña de acerca de
-    acercadeitem = gtk_menu_item_new_with_label("Acerca de...");
-    gtk_menu_item_set_submenu(GTK_MENU_ITEM(acercadeitem), acercade);
-    gtk_menu_shell_append(GTK_MENU_SHELL(menu), acercadeitem);
+  acercadeitem = gtk_menu_item_new_with_label("Acerca de...");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(acercadeitem), acercade);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu), acercadeitem);
   // Creando los submenus para doctores
-    doctoresitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
-    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
-    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
-    doctoresitem = gtk_menu_item_new_with_label("Listado de doctores");
-    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
-    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
-    doctoresitem = gtk_menu_item_new_with_label("Desplegar doctores por especialidad");
-    gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
-    gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  doctoresitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
+  gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  doctoresitem = gtk_menu_item_new_with_label("Listado de doctores");
+  gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  doctoresitem = gtk_menu_item_new_with_label("Desplegar doctores por especialidad");
+  gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
+  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   // Creando los submenus para pacientes
-    pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
-    gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
-    gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
+  gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
+  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   // Creando los submenus para ayuda
-    ayudaitem = gtk_menu_item_new_with_label("Ayuda general del sistema");
-    gtk_menu_shell_append(GTK_MENU_SHELL(ayuda), ayudaitem);
-    gtk_signal_connect(GTK_OBJECT(ayudaitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  ayudaitem = gtk_menu_item_new_with_label("Ayuda general del sistema");
+  gtk_menu_shell_append(GTK_MENU_SHELL(ayuda), ayudaitem);
+  gtk_signal_connect(GTK_OBJECT(ayudaitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   // Creando los submenus para acercade
-    acercadeitem = gtk_menu_item_new_with_label("Desarrolladores");
-    gtk_menu_shell_append(GTK_MENU_SHELL(acercade), acercadeitem);
-    gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  acercadeitem = gtk_menu_item_new_with_label("Desarrolladores");
+  gtk_menu_shell_append(GTK_MENU_SHELL(acercade), acercadeitem);
+  gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   return menu;
 }
 // Funcion que busca a un paciente ingresado por el usuario
@@ -668,27 +692,27 @@ void botonesControlA(GtkButton *button, gpointer data){
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
   switch (comboActive) {
-    case 0:
-      tipoSangre = "A+";
-      break;
-    case 1:
-      tipoSangre = "A-";
-      break;
-    case 2:
-      tipoSangre = "B+";
-      break;
-    case 3:
-      tipoSangre = "B-";
-      break;
-    case 4:
-      tipoSangre = "O+";
-      break;
-    case 5:
-      tipoSangre = "O-";
-      break;
-    case 6:
-      tipoSangre = "AB+";
-      break;
+  case 0:
+    tipoSangre = "A+";
+    break;
+  case 1:
+    tipoSangre = "A-";
+    break;
+  case 2:
+    tipoSangre = "B+";
+    break;
+  case 3:
+    tipoSangre = "B-";
+    break;
+  case 4:
+    tipoSangre = "O+";
+    break;
+  case 5:
+    tipoSangre = "O-";
+    break;
+  case 6:
+    tipoSangre = "AB+";
+    break;
   }
   padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
   gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
@@ -797,20 +821,20 @@ int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida num
   return Status;
 }
 int CalcEdad(int Dia, int Mes, int Anio){
-	int NoDias1, NoDias2,Diferencia;
+  int NoDias1, NoDias2,Diferencia;
   int dd, mm, aa, Edad;
-	char Timestamp[200];
-	time_t rawtime;
+  char Timestamp[200];
+  time_t rawtime;
   struct tm *timeinfo;
-	time(&rawtime);
+  time(&rawtime);
   timeinfo = localtime(&rawtime);
   strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
   sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
-	NoDias1 = (Anio*365)+(Mes*30)+Dia;
-	NoDias2 = (aa*365)+(mm*30)+dd;
-	Diferencia = NoDias2-NoDias1;
-	Edad = Diferencia / 365;
-	return Edad;
+  NoDias1 = (Anio*365)+(Mes*30)+Dia;
+  NoDias2 = (aa*365)+(mm*30)+dd;
+  Diferencia = NoDias2-NoDias1;
+  Edad = Diferencia / 365;
+  return Edad;
 }
 void actualizarArchivoPacientes(Pacientes* ListaPacientes){
   Pacientes* temp = ListaPacientes;
@@ -914,7 +938,7 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
 }
 void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo)
 {
-   nuevo->sig=*ListaPacientes;
+  nuevo->sig=*ListaPacientes;
   *ListaPacientes=nuevo;
 }
 
@@ -990,10 +1014,10 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
 }
 void getDate(char date[]){
   int dd, mm, aa;
-	char Timestamp[200];
-	time_t rawtime;
+  char Timestamp[200];
+  time_t rawtime;
   struct tm *timeinfo;
-	time(&rawtime);
+  time(&rawtime);
   timeinfo = localtime(&rawtime);
   strftime(Timestamp,200, "%Y,%m,%d", timeinfo);
   sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
