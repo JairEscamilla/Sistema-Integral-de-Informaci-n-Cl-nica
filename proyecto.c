@@ -291,12 +291,19 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
     GtkSettings *default_settings = gtk_settings_get_default();
     g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
     GtkWidget *ingresar = gtk_image_new_from_file ("Iconos/Ingresar.png");
+    gtk_widget_set_name (ingresar, "Ingresar");
     GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
+    gtk_widget_set_name (buscar, "Buscar");
     GtkWidget *actualizar = gtk_image_new_from_file ("Iconos/Actualizar.png");
+    gtk_widget_set_name (actualizar, "Actualizar");
     GtkWidget *nuevacita = gtk_image_new_from_file ("Iconos/NuevaCita.png");
+    gtk_widget_set_name (nuevacita, "NuevaCita");
     GtkWidget *nuevopaciente = gtk_image_new_from_file ("Iconos/NuevoPaciente.png");
+    gtk_widget_set_name (nuevopaciente, "NuevoPaciente");
     GtkWidget *historial = gtk_image_new_from_file ("Iconos/Historial.png");
+    gtk_widget_set_name (historial, "Historial");
     GtkWidget *vaciar = gtk_image_new_from_file ("Iconos/Vaciar.png");
+    gtk_widget_set_name (vaciar, "Vaciar");
     GtkWidget *button;
 
     if(flag == 0){
@@ -318,7 +325,9 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
       gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
     }
     if(flag == 3){
-      button = gtk_button_new_from_stock(GTK_STOCK_ADD);
+      button = gtk_button_new_with_label("");
+      gtk_button_set_image (GTK_BUTTON (button), nuevacita);
+      gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
       gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 10);
     }
     if(flag == 4){
