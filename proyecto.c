@@ -1117,26 +1117,22 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
   }
 }
 void mostrarHistorial(){
-  GtkWidget *window, *swin, *viewport, *table1, *table2, *vbox, *label;
+  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label;
   GtkAdjustment *horizontal, *vertical;
-  GtkWidget *buttons1[10][10], *buttons2[10][10];
   unsigned int i, j;
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "Scrolled Windows & Viewports");
+  gtk_window_set_title (GTK_WINDOW (window), "Historial Médico");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
   gtk_widget_set_size_request (window, 500, 400);
   g_signal_connect (G_OBJECT (window), "destroy",
   G_CALLBACK (gtk_main_quit), NULL);
-  table1 = gtk_table_new (10, 10, TRUE);
-  table2 = gtk_table_new (10, 10, TRUE);
+  table1 = gtk_table_new (10, 10, FALSE);
   gtk_table_set_row_spacings (GTK_TABLE (table1), 5);
-  gtk_table_set_row_spacings (GTK_TABLE (table2), 5);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 5);
-  gtk_table_set_col_spacings (GTK_TABLE (table2),5);
   /* Pack each table with 100 buttons. */
   for (i = 0; i < 10; i++){
-    for (j = 0; j < 10; j++){
-      label = gtk_label_new("Hola");
+    for (j = 0; j < 100; j++){
+      label = gtk_label_new("Hola como estas me llamo cesar arellano y estoy escribiendo..");
       gtk_table_attach_defaults (GTK_TABLE(table1), label, i, i+1,j, j + 1);
     }
   }
@@ -1150,10 +1146,7 @@ void mostrarHistorial(){
   gtk_container_set_border_width (GTK_CONTAINER (viewport), 5);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (swin), table1);
-  gtk_container_add (GTK_CONTAINER (viewport), table2);
-  /* Pack the widgets into a GtkVBox and then into the window. */
   vbox = gtk_vbox_new (TRUE, 5);
-  gtk_box_pack_start_defaults (GTK_BOX (vbox), viewport);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show_all (window);
