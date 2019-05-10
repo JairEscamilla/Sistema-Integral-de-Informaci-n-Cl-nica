@@ -90,7 +90,7 @@ void getDate(char date[]);
 void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente);
 void crearCita(GtkWidget* boton, gpointer data);
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
-void mostrarHistorial();
+void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -740,7 +740,7 @@ void botonesControlA(GtkButton *button, gpointer data){
     return;
   }
   if(strcmp("Historial", boton) == 0){
-    mostrarHistorial();
+    mostrarHistorial(datos,nombre);
   }
 }
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera){
@@ -1116,9 +1116,14 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
     temp3->sig = Nuevo;
   }
 }
-void mostrarHistorial(){
-  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label;
+void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
+  
+  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label, *labelTit;
   GtkAdjustment *horizontal, *vertical;
+  char titulo[200];
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
+  pango_attr_list_insert(attrlist, attr);
   unsigned int i, j;
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "Historial Médico");
@@ -1126,6 +1131,13 @@ void mostrarHistorial(){
   gtk_widget_set_size_request (window, 500, 400);
   g_signal_connect (G_OBJECT (window), "destroy",
   G_CALLBACK (gtk_main_quit), NULL);
+  
+  strcpy(titulo, "Historial Médico de ");
+  strcat(titulo, nombre);
+  labelTit = gtk_label_new (titulo);
+  gtk_misc_set_alignment (GTK_MISC(labelTit), 0, 0.5);
+  pango_attr_list_insert(attrlist, attr);
+  gtk_label_set_attributes(GTK_LABEL(labelTit), attrlist);
   table1 = gtk_table_new (10, 10, FALSE);
   gtk_table_set_row_spacings (GTK_TABLE (table1), 5);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 5);
@@ -1146,7 +1158,8 @@ void mostrarHistorial(){
   gtk_container_set_border_width (GTK_CONTAINER (viewport), 5);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (swin), table1);
-  vbox = gtk_vbox_new (TRUE, 5);
+  vbox = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (vbox), labelTit, FALSE, FALSE, 20);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show_all (window);
