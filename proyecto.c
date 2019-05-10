@@ -1117,7 +1117,8 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
   }
 }
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
-  
+  Pacientes *paciente = temp->ListaPacientes;
+  int flag = 0;
   GtkWidget *window, *swin, *viewport, *table1, *vbox, *label, *labelTit;
   GtkAdjustment *horizontal, *vertical;
   char titulo[200];
@@ -1125,6 +1126,18 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   pango_attr_list_insert(attrlist, attr);
   unsigned int i, j;
+  while(paciente != NULL && flag == 0){
+  	if(strcmp(paciente->Nombre, nombre) == 0)
+  		flag = 1;
+  	else
+  		paciente = paciente->sig;
+  }
+
+  if(flag == 1)
+  	printf("Se encontró paciente\n");
+  else 
+  	printf("No se encontró\n");
+  
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "Historial Médico");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
@@ -1144,6 +1157,7 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   /* Pack each table with 100 buttons. */
   for (i = 0; i < 10; i++){
     for (j = 0; j < 100; j++){
+
       label = gtk_label_new("Hola como estas me llamo cesar arellano y estoy escribiendo..");
       gtk_table_attach_defaults (GTK_TABLE(table1), label, i, i+1,j, j + 1);
     }
