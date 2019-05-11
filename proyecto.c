@@ -1119,7 +1119,7 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   Pacientes *paciente = temp->ListaPacientes;
   int flag = 0;
-  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label, *labelTit;
+  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label, *labelTit, *dialog;
   GtkAdjustment *horizontal, *vertical;
   char titulo[200];
   PangoAttrList *attrlist = pango_attr_list_new();
@@ -1133,18 +1133,20 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   		paciente = paciente->sig;
   }
 
-  if(flag == 1)
-  	printf("Se encontró paciente\n");
-  else 
-  	printf("No se encontró\n");
-  
+  if(flag == 0 || paciente->HClinica == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se ha encontrado la historia médica de este paciente");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "Historial Médico");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
   gtk_widget_set_size_request (window, 500, 400);
   g_signal_connect (G_OBJECT (window), "destroy",
   G_CALLBACK (gtk_main_quit), NULL);
-  
+
   strcpy(titulo, "Historial Médico de ");
   strcat(titulo, nombre);
   labelTit = gtk_label_new (titulo);
