@@ -1,7 +1,7 @@
 Allan
 Direccion
 1234567890
-Femenino
+Masculino
 7/5/2000
 19
 1.8
