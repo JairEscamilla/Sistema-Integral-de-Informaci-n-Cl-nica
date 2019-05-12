@@ -98,6 +98,8 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas);
 void interfazDoctores(GtkWidget* item, gpointer Parametros);
 void botonesControlDoc(GtkWidget* button, gpointer data);
+void actualizarArchivoDoctores(Doctores* ListaDoctores);
+void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores* ListaDoctores);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -1308,6 +1310,7 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
 void interfazDoctores(GtkWidget* item, gpointer Parametros){
   ParametrosListas* Listas = (ParametrosListas*)Parametros;
   gtk_widget_destroy(Listas->window);
+  Listas->sexo = 0;
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
@@ -1489,50 +1492,59 @@ void buscar2(GtkWidget* widget, gpointer data){
       gtk_widget_destroy(dialog);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->FullName);
       strcpy(datos->nombreBuscado, temp->FullName);
-    //  gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
-      if(strcmp(temp->Especialidad1, "Anatomía") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 0);
-      if(strcmp(temp->Especialidad1, "Cirugía General") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 1);
-      if(strcmp(temp->Especialidad1, "Ginecología y Obstetricia") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
-      if(strcmp(temp->Especialidad1, "Medicina General") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 3);
-      if(strcmp(temp->Especialidad1, "Ortopedia") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 4);
-      if(strcmp(temp->Especialidad1, "Pediatria") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 5);
-      if(strcmp(temp->Especialidad1, "Otorrinolaringólogo") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 6);
-      if(strcmp(temp->Especialidad1, "Radiología e imágen") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 7);
+      if(strcmp(temp->Especialidad1, "Anatomía") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 0);
+      }
+      if(strcmp(temp->Especialidad1, "Cirugía General") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 1);
+      }
+      if(strcmp(temp->Especialidad1, "Ginecología y Obstetricia") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
+      }
+      if(strcmp(temp->Especialidad1, "Medicina General") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 3);
+      }
+      if(strcmp(temp->Especialidad1, "Ortopedia") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 4);
+      }
+      if(strcmp(temp->Especialidad1, "Pediatria") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 5);
+      }
+      if(strcmp(temp->Especialidad1, "Otorrinolaringólogo") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 6);
+      }
+      if(strcmp(temp->Especialidad1, "Radiología e imágen") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 7);
+      }
 
-      if(strcmp(temp->Especialidad2, "Anatomía") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 0);
-      if(strcmp(temp->Especialidad2, "Cirugía General") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 1);
+      if(strcmp(temp->Especialidad2, "Anatomía") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 0);
+      }
+      if(strcmp(temp->Especialidad2, "Cirugía General") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 1);
+      }
       if(strcmp(temp->Especialidad2, "Ginecología y Obstetricia") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
-      if(strcmp(temp->Especialidad2, "Medicina General") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 3);
-      if(strcmp(temp->Especialidad2, "Ortopedia") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 4);
-      if(strcmp(temp->Especialidad2, "Pediatria") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 5);
-      if(strcmp(temp->Especialidad2, "Otorrinolaringólogo") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 6);
-      if(strcmp(temp->Especialidad2, "Radiología e imágen") == 0)
-          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 7);
-
-
-
-      if(temp->status == 0){
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
-        datos->sexo = 0;
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 2);
+      if(strcmp(temp->Especialidad2, "Medicina General") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 3);
+      }
+      if(strcmp(temp->Especialidad2, "Ortopedia") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 4);
+      }
+      if(strcmp(temp->Especialidad2, "Pediatria") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 5);
+      }
+      if(strcmp(temp->Especialidad2, "Otorrinolaringólogo") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 6);
+      }
+      if(strcmp(temp->Especialidad2, "Radiología e imágen") == 0){
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[2]), 7);
       }
       if(temp->status == 0){
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
+      }
+      if(temp->status == 1){
         gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
-        datos->sexo = 1;
       }
       gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->telefono);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->Direccion);
@@ -1553,59 +1565,106 @@ void buscar2(GtkWidget* widget, gpointer data){
   }
 }
 void botonesControlDoc(GtkWidget* button, gpointer data){
-/*  ParametrosListas* datos = (ParametrosListas*)data;
+ ParametrosListas* datos = (ParametrosListas*)data;
   int validacion[7];
   char boton[200];
-  int sexo, comboActive;
-  const gchar* nombre, *especialidad1, *especialidad2, *status, *telefono, *direccion, *consultorio, *dias, *horario, *contra;
-  guint year, month, day;
-  strcpy(boton, gtk_widget_get_name(GTK_WIDGET(gtk_button_get_image(button))));
+  int status, comboActive;
+  GtkWidget* dialog;
+  const gchar* nombre, *especialidad1, *especialidad2, *telefono, *direccion, *consultorio, *dias, *horario, *contra, *telefonoUrgencias;
+  strcpy(boton, gtk_widget_get_name(GTK_WIDGET(gtk_button_get_image(GTK_BUTTON(button)))));
   nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
-  direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
-  telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
-  sexo = datos->sexo;
-  estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
-  alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[1]));
+  switch (comboActive) {
+    case 0:
+      especialidad1 = "Anatomía";
+      break;
+    case 1:
+      especialidad1 = "Cirugía General";
+      break;
+    case 2:
+      especialidad1 = "Ginecología y Obstetricia";
+      break;
+    case 3:
+      especialidad1 = "Medicina General";
+      break;
+    case 4:
+      especialidad1 = "Ortopedia";
+      break;
+    case 5:
+      especialidad1 = "Pediatria";
+      break;
+    case 6:
+      especialidad1 = "Otorrinolaringólogo";
+      break;
+    case 7:
+      especialidad1 = "Radiología e imágen";
+      break;
+  }
+  comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[2]));
+  switch (comboActive) {
+    case 0:
+      especialidad2 = "Anatomía";
+      break;
+    case 1:
+      especialidad2 = "Cirugía General";
+      break;
+    case 2:
+      especialidad2 = "Ginecología y Obstetricia";
+      break;
+    case 3:
+      especialidad2 = "Medicina General";
+      break;
+    case 4:
+      especialidad2 = "Ortopedia";
+      break;
+    case 5:
+      especialidad2 = "Pediatria";
+      break;
+    case 6:
+      especialidad2 = "Otorrinolaringólogo";
+      break;
+    case 7:
+      especialidad2 = "Radiología e imágen";
+      break;
+  }
+  status = datos->sexo;
+  telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[5]));
+  direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[6]));
+  consultorio = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
+  dias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  contra = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
+  telefonoUrgencias = gtk_entry_get_text(GTK_ENTRY(datos->entry[11]));
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
   switch (comboActive) {
   case 0:
-    tipoSangre = "A+";
+    horario = "07:00 - 15:00";
     break;
   case 1:
-    tipoSangre = "A-";
+    horario = "15:00 - 23:00";
     break;
   case 2:
-    tipoSangre = "B+";
-    break;
-  case 3:
-    tipoSangre = "B-";
-    break;
-  case 4:
-    tipoSangre = "O+";
-    break;
-  case 5:
-    tipoSangre = "O-";
-    break;
-  case 6:
-    tipoSangre = "AB+";
+    horario = "23:00 - 07:00";
     break;
   }
-  padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
-  gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
-  validacion[0] = validarLetras(nombre, "Nombre paciente");
+  validacion[0] = validarLetras(nombre, "Nombre doctor");
   validacion[1] = validarNumeros(telefono, "Telefono");
-  validacion[2] = validarNumeros(estatura, "Estatura");
-  validacion[3] = validarLetras(alergias, "Alergias");
-  validacion[4] = validarLetras(tipoSangre, "Tipo de sangre");
-  validacion[5] = validarLetras(padecimientosCronicos, "PadecimientosCronicos");
-  for(int i = 0; i < 6; i++)
+  validacion[2] = validarLetras(dias, "Dias de consulta");
+  validacion[3] = validarNumeros(telefonoUrgencias, "Telefono de urgencias");
+  validacion[4] = direccion[0] == '\0'? 1: 0;
+  validacion[5] = consultorio[0] == '\0'? 1: 0;
+  if(validacion[4] == 1 || validacion[5] == 1){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_ERROR, GTK_BUTTONS_OK, "Aún faltan campos por llenar");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  for(int i = 0; i < 4; i++)
     if(validacion[i] == 1)
       return;
-  month++;*/
 
-  /*if(strcmp("Actualizar", boton) == 0)
-    modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6], datos->flag);
-  if(strcmp("NuevoPaciente", boton) == 0){
+  if(strcmp("Actualizar", boton) == 0)
+    modificarDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, datos->ListaDoctores);
+  /*if(strcmp("NuevoPaciente", boton) == 0){
     nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
     strcpy(datos->nombreBuscado, nombre);
   }
@@ -1616,4 +1675,52 @@ void botonesControlDoc(GtkWidget* button, gpointer data){
   if(strcmp("Historial", boton) == 0){
     mostrarHistorial(datos,nombre);
   }*/
+}
+void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores* ListaDoctores){
+  Doctores* temp = ListaDoctores;
+  GtkWidget* dialog;
+  while (temp != NULL && strcmp(nombre, temp->FullName) != 0) {
+    temp = temp->sig;
+  }
+  if(temp == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El doctor no se encuentra en la base de datos");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  strcpy(temp->FullName, nombre);
+  strcpy(temp->Direccion, direccion);
+  strcpy(temp->telefono, telefono);
+  temp->status = status;
+  strcpy(temp->ConsultorioAsignado, consultorio);
+  strcpy(temp->diasConsulta, dias);
+  strcpy(temp->Password, contra);
+  strcpy(temp->telefonoUrgencias, telefonoUrgencias);
+  strcpy(temp->HorarioConsulta, horario);
+  strcpy(temp->Especialidad1, especialidad1);
+  strcpy(temp->Especialidad2, especialidad2);
+
+  actualizarArchivoDoctores(ListaDoctores);
+  dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "El doctor ha sido actualizado con éxito");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+}
+void actualizarArchivoDoctores(Doctores* ListaDoctores){
+  Doctores* temp = ListaDoctores;
+  FILE* Archivo = fopen("doctores.txt", "wt");
+  while(temp != NULL){
+    fprintf(Archivo, "%s\n", temp->FullName);
+    fprintf(Archivo, "%s\n", temp->Especialidad1);
+    fprintf(Archivo, "%s\n", temp->Especialidad2);
+    fprintf(Archivo, "%d\n", temp->status);
+    fprintf(Archivo, "%s\n", temp->telefonoUrgencias);
+    fprintf(Archivo, "%s\n", temp->Direccion);
+    fprintf(Archivo, "%s\n", temp->telefono);
+    fprintf(Archivo, "%s\n", temp->ConsultorioAsignado);
+    fprintf(Archivo, "%s\n", temp->diasConsulta);
+    fprintf(Archivo, "%s\n", temp->HorarioConsulta);
+    fprintf(Archivo, "%s\n", temp->Password);
+    temp = temp->sig;
+  }
+  fclose(Archivo);
 }
