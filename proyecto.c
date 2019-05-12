@@ -9,9 +9,9 @@ typedef struct defDoctores{ // Estructura definida para los datos de un doctor
   char Especialidad1[200];
   char Especialidad2[200];
   int status;// 1-> Activo y 0-> Inactivo
-  int telefonoUrgencias;
+  char telefonoUrgencias[200];
   char Direccion[200];
-  int telefono;
+  char telefono[200];
   char ConsultorioAsignado[200];
   char diasConsulta[200];
   char HorarioConsulta[50];
@@ -74,6 +74,7 @@ void entrandoSistema(ParametrosListas*);
 GtkWidget* menu(ParametrosListas* Listas);
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
+void buscar2();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
 void copiarStrings2(char campos[11][200]);
@@ -185,15 +186,15 @@ void leerListaDoctores(Doctores** Lista){
   if(Archivo == NULL){
     Archivo = fopen("doctores.txt", "wt");
     fprintf(Archivo, "DocPrueba\n");
-    fprintf(Archivo, "Neurólogo\n");
-    fprintf(Archivo, "Pediatría\n");
+    fprintf(Archivo, "Pediatria\n");
+    fprintf(Archivo, "Ortopedia\n");
     fprintf(Archivo, "1\n");
     fprintf(Archivo, "5545455019\n");
     fprintf(Archivo, "Paseo de la Reforma 880, Lomas de Santa Fe\n");
     fprintf(Archivo, "5514129916\n");
     fprintf(Archivo, "1A\n");
     fprintf(Archivo, "Lunes y Martes\n");
-    fprintf(Archivo, "9:00 - 15:00\n");
+    fprintf(Archivo, "07:00 - 15:00\n");
     fprintf(Archivo, "12345\n");
     fclose(Archivo);
     Archivo = fopen("doctores.txt", "rt");
@@ -204,9 +205,9 @@ void leerListaDoctores(Doctores** Lista){
     fscanf(Archivo, " %[^\n]", Nuevo->Especialidad1);
     fscanf(Archivo, " %[^\n]", Nuevo->Especialidad2);
     fscanf(Archivo, " %d", &Nuevo->status);
-    fscanf(Archivo, " %d", &Nuevo->telefonoUrgencias);
+    fscanf(Archivo, " %[^\n]", Nuevo->telefonoUrgencias);
     fscanf(Archivo, " %[^\n]", Nuevo->Direccion);
-    fscanf(Archivo, " %d", &Nuevo->telefono);
+    fscanf(Archivo, " %[^\n]", Nuevo->telefono);
     fscanf(Archivo, " %[^\n]", Nuevo->ConsultorioAsignado);
     fscanf(Archivo, " %[^\n]", Nuevo->diasConsulta);
     fscanf(Archivo, " %[^\n]", Nuevo->HorarioConsulta);
@@ -1400,7 +1401,7 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
 
   // Creando boton de busqueda
   boton = AddButton(horizontales[0], "Buscar", buscar, 1);
-  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar2), (gpointer)Listas);
   botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
   gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos2), (gpointer)Listas);
 
@@ -1437,4 +1438,104 @@ void limpiarCampos2(GtkButton *button, gpointer data){
     if(i != 4 && i != 3 && i != 9 && i != 1 && i != 2)
       gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
   gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
+}
+
+void buscar2(GtkWidget* widget, gpointer data){
+  GtkWidget *dialog;
+  const gchar* nombre;
+  int flag = 0;
+  ParametrosListas* datos = (ParametrosListas*)data;
+  Doctores* temp = datos->ListaDoctores;
+  datos->flag = 0;
+  nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  if(temp == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Aún no hay doctores");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+  }else{
+    while (temp != NULL && flag == 0) {
+      if(strcmp(nombre, temp->FullName) == 0)
+        flag = 1;
+      else
+        temp = temp->sig;
+    }
+    if(flag == 0){
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "No se ha encontrado el paciente");
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(dialog);
+      datos->nombreBuscado[0] = '\0';
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), "");
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), "");
+    }else{
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha encontrado con éxito al doctor");
+      gtk_dialog_run(GTK_DIALOG(dialog));
+      gtk_widget_destroy(dialog);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[0]), temp->FullName);
+      strcpy(datos->nombreBuscado, temp->FullName);
+    //  gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
+      if(strcmp(temp->Especialidad1, "Anatomía") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 0);
+      if(strcmp(temp->Especialidad1, "Cirugía General") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 1);
+      if(strcmp(temp->Especialidad1, "Ginecología y Obstetricia") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
+      if(strcmp(temp->Especialidad1, "Medicina General") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 3);
+      if(strcmp(temp->Especialidad1, "Ortopedia") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 4);
+      if(strcmp(temp->Especialidad1, "Pediatria") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 5);
+      if(strcmp(temp->Especialidad1, "Otorrinolaringólogo") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 6);
+      if(strcmp(temp->Especialidad1, "Radiología e imágen") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 7);
+
+      if(strcmp(temp->Especialidad2, "Anatomía") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 0);
+      if(strcmp(temp->Especialidad2, "Cirugía General") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 1);
+      if(strcmp(temp->Especialidad2, "Ginecología y Obstetricia") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 2);
+      if(strcmp(temp->Especialidad2, "Medicina General") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 3);
+      if(strcmp(temp->Especialidad2, "Ortopedia") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 4);
+      if(strcmp(temp->Especialidad2, "Pediatria") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 5);
+      if(strcmp(temp->Especialidad2, "Otorrinolaringólogo") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 6);
+      if(strcmp(temp->Especialidad2, "Radiología e imágen") == 0)
+          gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[1]), 7);
+
+
+
+      if(temp->status == 0){
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[3]), TRUE);
+        datos->sexo = 0;
+      }
+      if(temp->status == 0){
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(datos->entry[4]), TRUE);
+        datos->sexo = 1;
+      }
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), temp->telefono);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), temp->Direccion);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->ConsultorioAsignado);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->diasConsulta);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), temp->Password);
+      if(strcmp(temp->HorarioConsulta, "07:00 - 15:00") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
+
+      if(strcmp(temp->HorarioConsulta, "15:00 - 23:00") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
+
+      if(strcmp(temp->HorarioConsulta, "23:00 - 07:00") == 0)
+        gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
+
+    }
+  }
 }
