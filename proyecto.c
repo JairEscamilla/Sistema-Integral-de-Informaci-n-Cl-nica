@@ -915,6 +915,7 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   sprintf(edadCaracter, "%d", edad);
   strcpy(temp->edad, edadCaracter);
   strcpy(temp->fecnac, fecnac);
+  temp->HClinica = NULL;
   temp->sig = NULL;
   while((temp2!=NULL)&&(strcmp(nombre,temp2->Nombre)>0))
     temp2=temp2->sig;
@@ -1226,13 +1227,72 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   gtk_main();
 }
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
-  GtkWidget* window;
+  ParametrosListas* datos = (ParametrosListas*)Listas;
+  Pacientes* ListaPacientes = datos->ListaPacientes;
+  GtkWidget* dialog, *window, *labelTit, *table1, *vbox, *swin, *viewport, *label[10];
+  GtkAdjustment *horizontal, *vertical;
+  int i = 0, numPaciente = 0;
+  char auxiliar[200], aux2[200];
+  if(ListaPacientes == NULL){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Aún no hay pacientes registrados");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
+  pango_attr_list_insert(attrlist, attr);
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "Lista de pacientes");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
   gtk_widget_set_size_request (window, 500, 400);
   g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+
+  labelTit = gtk_label_new ("Lista de pacientes");
+  gtk_misc_set_alignment (GTK_MISC(labelTit), 0, 0.5);
+  pango_attr_list_insert(attrlist, attr);
+  gtk_label_set_attributes(GTK_LABEL(labelTit), attrlist);
+  table1 = gtk_table_new (5, 5, FALSE);
+  gtk_table_set_row_spacings (GTK_TABLE (table1), 0);
+  gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
+
+  while (ListaPacientes != NULL) {
+    strcpy(auxiliar, "Paciente número ");
+    sprintf(aux2, "%d", numPaciente+1 );
+    strcat(auxiliar, aux2);
+    strcat(auxiliar, ": ");
+    label[0] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[0]), 0, 0);
+    pango_attr_list_insert(attrlist, attr);
+    gtk_label_set_attributes(GTK_LABEL(label[0]), attrlist);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[0], 0, 1, i, i+1);
+    //label[6] = gtk_label_new(NULL);
+    //gtk_table_attach_defaults (GTK_TABLE(table1), label[6], 1, 2, i, i+1);
+    //i+= 2;
+    label[1] = gtk_label_new(ListaPacientes->Nombre);
+    gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
+    gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
+    i+= 2;
+    auxiliar[0] = '\0';
+    ListaPacientes = ListaPacientes->sig;
+    numPaciente++;
+  }
+
+  swin = gtk_scrolled_window_new (NULL, NULL);
+  horizontal = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (swin));
+  vertical = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (swin));
+  viewport = gtk_viewport_new (horizontal, vertical);
+  gtk_container_set_border_width (GTK_CONTAINER (swin), 5);
+  gtk_container_set_border_width (GTK_CONTAINER (viewport), 5);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (swin), table1);
+  vbox = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (vbox), labelTit, FALSE, FALSE, 20);
+  gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+
   gtk_widget_show_all (window);
   gtk_main();
 }
