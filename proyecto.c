@@ -76,6 +76,7 @@ void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
 void copiarStrings(char campos[11][200]);
+void copiarStrings2(char campos[11][200]);
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera);
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed);
 void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo);
@@ -1309,7 +1310,7 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
   GtkAdjustment *ajuste;
   char campos[11][200];
-  copiarStrings(campos);
+  copiarStrings2(campos);
   ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.5, 0.2, 2.5, 0));
   // Creando las cajas
   containerDown = gtk_hbox_new(TRUE, 10);
@@ -1344,17 +1345,17 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
     if(i < 11){
       if(i == 3 || i == 4){
         if(i == 3){
-          label[i] = gtk_label_new("Sexo: ");
-	  gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
+          label[i] = gtk_label_new("Status: ");
+	         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 30);
         }
         if(i == 3){
-          Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
-          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 35);
+          Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "Activo");
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 10);
         }else{
-          Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
+          Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "Inactivo");
           gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 15);
           botonesA[i] = AddButton(horizontales[3], "Actualizar", botonesControlA, 4);
-	  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+	        gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
         }
         gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
       }else{
@@ -1393,23 +1394,12 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
         }
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
-    }else{
-      label[i] = gtk_label_new("Modificar/Crear fecnac: ");
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-      Listas->calendar = gtk_calendar_new();
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->calendar, TRUE, TRUE, 0);
-      label[i] = gtk_label_new(NULL);
-      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
   }
 
   // Creando boton de busqueda
   boton = AddButton(horizontales[0], "Buscar", buscar, 1);
   gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
-
-  botonesA[4] = AddButton(containerDown, "Actualizar", botonesControlA, 5);
-  gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
   botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
   gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
 
@@ -1423,4 +1413,18 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   gtk_container_add(GTK_CONTAINER(Listas->window), vertical);
   gtk_widget_show_all(Listas->window);
   gtk_main();
+}
+
+void copiarStrings2(char campos[11][200]){
+  strcpy(campos[0], "Nombre del doctor: ");
+  strcpy(campos[1], "Especialidad 1: ");
+  strcpy(campos[2], "Especialidad 2: ");
+  strcpy(campos[3], "status: ");
+  strcpy(campos[4], "Telefono de urgencias: ");
+  strcpy(campos[6], "Dirección: ");
+  strcpy(campos[5], "telefono: ");
+  strcpy(campos[7], "Consultorio asignado: ");
+  strcpy(campos[8], "Dias de consulta: ");
+  strcpy(campos[9], "Horario de consulta: ");
+  strcpy(campos[10], "Contraseña: ");
 }
