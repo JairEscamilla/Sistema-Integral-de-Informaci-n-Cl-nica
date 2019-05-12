@@ -1269,7 +1269,12 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
     pango_attr_list_insert(attrlist, attr);
     gtk_label_set_attributes(GTK_LABEL(label[0]), attrlist);
     gtk_table_attach_defaults (GTK_TABLE(table1), label[0], 0, 1, i, i+1);
-    label[1] = gtk_label_new(ListaPacientes->Nombre);
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, ListaPacientes->Nombre);
+    strcat(auxiliar, ".  (");
+    strcat(auxiliar, ListaPacientes->telefono);
+    strcat(auxiliar, ").");
+    label[1] = gtk_label_new(auxiliar);
     gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
     gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
     i+= 2;
@@ -1305,6 +1310,9 @@ void interfazDoctores(GtkWidget* menu, gpointer Parametros){
   gtk_widget_set_size_request (datos->window, 600, 650);
   g_signal_connect (G_OBJECT (datos->window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
   gtk_window_set_position(GTK_WINDOW(datos->window), GTK_WIN_POS_CENTER_ALWAYS);
+
+
+
   gtk_widget_show_all (datos->window);
   gtk_main();
 }
