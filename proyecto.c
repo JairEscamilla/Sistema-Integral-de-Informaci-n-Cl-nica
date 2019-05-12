@@ -87,6 +87,7 @@ int CalcEdad(int Dia, int Mes, int Anio);
 void actualizarArchivoPacientes(Pacientes* ListaPacientes);
 void radio(GtkToggleButton* button, gpointer data);
 void limpiarCampos(GtkButton *button, gpointer data);
+void limpiarCampos2(GtkButton *button, gpointer data);
 void generarCita(ParametrosListas* datos, const gchar* nombre);
 void getDate(char date[]);
 void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente);
@@ -1401,7 +1402,7 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   boton = AddButton(horizontales[0], "Buscar", buscar, 1);
   gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
   botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
-  gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
+  gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos2), (gpointer)Listas);
 
 
   invisible[10] = gtk_label_new(NULL);
@@ -1427,4 +1428,13 @@ void copiarStrings2(char campos[11][200]){
   strcpy(campos[8], "Dias de consulta: ");
   strcpy(campos[9], "Horario de consulta: ");
   strcpy(campos[10], "Contraseña: ");
+}
+
+void limpiarCampos2(GtkButton *button, gpointer data){
+  ParametrosListas* datos = (ParametrosListas*)data;
+  datos->nombreBuscado[0] = '\0';
+  for(int i = 0; i < 11; i++)
+    if(i != 4 && i != 3 && i != 9 && i != 1 && i != 2)
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
 }
