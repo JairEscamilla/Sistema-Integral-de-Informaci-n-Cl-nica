@@ -52,6 +52,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   Pacientes* ListaPacientes;
   GtkWidget* entry[15];
   GtkWidget* calendar;
+  GtkWidget* window;
   int sexo, flag;
   char nombreBuscado[200];
   char LoggedDoctor[200];
@@ -92,6 +93,7 @@ void crearCita(GtkWidget* boton, gpointer data);
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas);
+void interfazDoctores(GtkWidget* menu, gpointer Parametros);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -403,7 +405,7 @@ void iniciarSesion(GtkButton *button, gpointer data){
 void entrandoSistema(ParametrosListas* Listas){
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
-  GtkWidget* window, *menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
+  GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
   GtkAdjustment *ajuste;
   char campos[11][200];
   copiarStrings(campos);
@@ -419,12 +421,12 @@ void entrandoSistema(ParametrosListas* Listas){
   }
   horizontalA = gtk_hbox_new(TRUE, 2);
   // Creando ventana principal
-  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title(GTK_WINDOW(window), "Sistema de información médica");
-  gtk_widget_set_size_request(window, 600, 650);
-  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
-  gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  Listas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(Listas->window), "Sistema de información médica");
+  gtk_widget_set_size_request(Listas->window, 600, 650);
+  gtk_window_set_resizable(GTK_WINDOW(Listas->window), FALSE);
+  gtk_window_set_position(GTK_WINDOW(Listas->window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(Listas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
   menuP = menu(Listas); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
 
@@ -517,8 +519,8 @@ void entrandoSistema(ParametrosListas* Listas){
   gtk_box_pack_start(GTK_BOX(vertical), containerDown, TRUE, TRUE, 0);
   invisible[10] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
-  gtk_container_add(GTK_CONTAINER(window), vertical);
-  gtk_widget_show_all(window);
+  gtk_container_add(GTK_CONTAINER(Listas->window), vertical);
+  gtk_widget_show_all(Listas->window);
   gtk_main();
 }
 
@@ -569,7 +571,7 @@ GtkWidget* menu(ParametrosListas* Listas){
   // Creando los submenus para doctores
   doctoresitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
   gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
-  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(interfazDoctores), (gpointer)Listas);
   doctoresitem = gtk_menu_item_new_with_label("Listado de doctores");
   gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
   gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
@@ -1267,9 +1269,6 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
     pango_attr_list_insert(attrlist, attr);
     gtk_label_set_attributes(GTK_LABEL(label[0]), attrlist);
     gtk_table_attach_defaults (GTK_TABLE(table1), label[0], 0, 1, i, i+1);
-    //label[6] = gtk_label_new(NULL);
-    //gtk_table_attach_defaults (GTK_TABLE(table1), label[6], 1, 2, i, i+1);
-    //i+= 2;
     label[1] = gtk_label_new(ListaPacientes->Nombre);
     gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
     gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
@@ -1294,5 +1293,18 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
 
 
   gtk_widget_show_all (window);
+  gtk_main();
+}
+
+void interfazDoctores(GtkWidget* menu, gpointer Parametros){
+  ParametrosListas* datos = (ParametrosListas*)Parametros;
+  gtk_widget_destroy(datos->window);
+  datos->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (datos->window), "Sistema de Informacióm Médica (Doctores)");
+  gtk_container_set_border_width (GTK_CONTAINER (datos->window), 10);
+  gtk_widget_set_size_request (datos->window, 600, 650);
+  g_signal_connect (G_OBJECT (datos->window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(datos->window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_widget_show_all (datos->window);
   gtk_main();
 }
