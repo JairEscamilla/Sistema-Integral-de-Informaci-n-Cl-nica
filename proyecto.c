@@ -100,6 +100,9 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros);
 void botonesControlDoc(GtkWidget* button, gpointer data);
 void actualizarArchivoDoctores(Doctores* ListaDoctores);
 void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores* ListaDoctores);
+void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores** ListaDoctores);
+void Inserta_Inicio2(Doctores **ListaPacientes, Doctores *nuevo);
+void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -950,14 +953,12 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
 }
-void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo)
-{
+void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo){
   nuevo->sig=*ListaPacientes;
   *ListaPacientes=nuevo;
 }
 
-void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo)
-{
+void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo){
   Pacientes *temp2;
   nuevo->sig=NULL;
   if(*ListaPacientes!=NULL)
@@ -1664,17 +1665,9 @@ void botonesControlDoc(GtkWidget* button, gpointer data){
 
   if(strcmp("Actualizar", boton) == 0)
     modificarDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, datos->ListaDoctores);
-  /*if(strcmp("NuevoPaciente", boton) == 0){
-    nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
-    strcpy(datos->nombreBuscado, nombre);
+  if(strcmp("NuevoPaciente", boton) == 0){
+    nuevoDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, &datos->ListaDoctores);
   }
-  if(strcmp(boton, "NuevaCita") == 0){
-    generarCita(datos, nombre);
-    return;
-  }
-  if(strcmp("Historial", boton) == 0){
-    mostrarHistorial(datos,nombre);
-  }*/
 }
 void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores* ListaDoctores){
   Doctores* temp = ListaDoctores;
@@ -1723,4 +1716,70 @@ void actualizarArchivoDoctores(Doctores* ListaDoctores){
     temp = temp->sig;
   }
   fclose(Archivo);
+}
+void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores** ListaDoctores){
+  Doctores* temp2 = *ListaDoctores;
+  Doctores* temp3 = *ListaDoctores;
+  Doctores* temp4 = *ListaDoctores;
+  Doctores* temp = (Doctores*)malloc(sizeof(Doctores));
+  GtkWidget* dialog;
+  int Bandera = 0;
+  while (temp3 != NULL && Bandera == 0) {
+    if(strcmp(temp3->FullName, nombre) == 0)
+      Bandera = 1;
+    temp3 = temp3->sig;
+  }
+  if(Bandera == 1){
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se puede agregar este paciente debido a que ya existe uno con el mismo nombre");
+    gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    return;
+  }
+  strcpy(temp->FullName, nombre);
+  strcpy(temp->Direccion, direccion);
+  strcpy(temp->telefono, telefono);
+  temp->status = status;
+  strcpy(temp->ConsultorioAsignado, consultorio);
+  strcpy(temp->diasConsulta, dias);
+  strcpy(temp->Password, contra);
+  strcpy(temp->telefonoUrgencias, telefonoUrgencias);
+  strcpy(temp->HorarioConsulta, horario);
+  strcpy(temp->Especialidad1, especialidad1);
+  strcpy(temp->Especialidad2, especialidad2);
+  temp->sig = NULL;
+  while((temp2!=NULL) && (strcmp(nombre,temp2->FullName)>0))
+    temp2=temp2->sig;
+
+  if(temp2!=NULL){
+      if(temp2 != *ListaDoctores){
+        while(temp4->sig!=temp2)
+          temp4=temp4->sig;
+        temp->sig=temp2;
+        temp4->sig=temp;
+      }else
+        Inserta_Inicio2(ListaDoctores,temp);
+  }else
+    Inserta_Fin2(ListaDoctores,temp);
+
+  actualizarArchivoDoctores(*ListaDoctores);
+  dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Se ha agregado de manera correcta el doctor");
+  gtk_dialog_run(GTK_DIALOG(dialog));
+  gtk_widget_destroy(dialog);
+}
+
+void Inserta_Inicio2(Doctores **ListaDoctores, Doctores *nuevo){
+  nuevo->sig=*ListaDoctores;
+  *ListaDoctores=nuevo;
+}
+void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo){
+  Doctores *temp2;
+  nuevo->sig=NULL;
+  if(*ListaDoctores!=NULL){
+      temp2=*ListaDoctores;
+      while(temp2->sig!=NULL)
+	     temp2=temp2->sig;
+      temp2->sig=nuevo;
+    }
+  else
+    *ListaDoctores=nuevo;
 }
