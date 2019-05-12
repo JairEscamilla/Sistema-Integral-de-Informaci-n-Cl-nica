@@ -1308,10 +1308,8 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
-  GtkAdjustment *ajuste;
   char campos[11][200];
   copiarStrings2(campos);
-  ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.5, 0.2, 2.5, 0));
   // Creando las cajas
   containerDown = gtk_hbox_new(TRUE, 10);
   vertical = gtk_vbox_new(0, 0);
@@ -1333,7 +1331,7 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
 
   cajatitulo = gtk_hbox_new (TRUE, 0); //Creando la caja del encabezado
-  titulo = gtk_label_new ("Administración de pacientes"); //Creando el encabezado
+  titulo = gtk_label_new ("Administración de doctores"); //Creando el encabezado
   gtk_misc_set_alignment (GTK_MISC(titulo), 0.05, 0.5); //Alineando a la izquierda
   pango_attr_list_insert(attrlist, attr); //Llamando a la lista de atributos
   gtk_label_set_attributes(GTK_LABEL(titulo), attrlist); //Asignando atributos a título
@@ -1361,18 +1359,23 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
       }else{
         label[i] = gtk_label_new(campos[i]);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
-        if(i == 7){
-          Listas->entry[i] = gtk_spin_button_new(ajuste, 0.1, 1);
+        if(i == 1 || i == 2){
+          Listas->entry[i] = gtk_combo_box_new_text();
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Anatomía");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Cirugía General");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Ginecología y Obstetricia");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Medicina General");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Ortopedia");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Pediatria");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Otorrinolaringólogo");
+          gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "Radiología e imágen");
+          gtk_combo_box_set_active(GTK_COMBO_BOX(Listas->entry[i]), 0);
         }else{
           if(i == 9){
             Listas->entry[i] = gtk_combo_box_new_text();
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A+");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A-");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B+");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B-");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O+");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O-");
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "AB+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "07:00 - 15:00");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "15:00 - 23:00");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "23:00 - 07:00");
             gtk_combo_box_set_active(GTK_COMBO_BOX(Listas->entry[i]), 0);
           }else
             Listas->entry[i] = gtk_entry_new();
@@ -1380,9 +1383,6 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
         gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
       }
 
-      if(i == 5   || i == 6){
-        gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
-      }
       if(i > 4){
         invisible[i] = gtk_label_new(NULL);
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
@@ -1420,9 +1420,9 @@ void copiarStrings2(char campos[11][200]){
   strcpy(campos[1], "Especialidad 1: ");
   strcpy(campos[2], "Especialidad 2: ");
   strcpy(campos[3], "status: ");
-  strcpy(campos[4], "Telefono de urgencias: ");
+  strcpy(campos[4], "Teléfono de urgencias: ");
   strcpy(campos[6], "Dirección: ");
-  strcpy(campos[5], "telefono: ");
+  strcpy(campos[5], "Teléfono: ");
   strcpy(campos[7], "Consultorio asignado: ");
   strcpy(campos[8], "Dias de consulta: ");
   strcpy(campos[9], "Horario de consulta: ");
