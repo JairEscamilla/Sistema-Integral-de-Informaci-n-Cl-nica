@@ -691,7 +691,6 @@ void botonesControlA(GtkButton *button, gpointer data){
   sexo = datos->sexo;
   estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
   alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
-  printf("%s\n", boton);
   comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
   switch (comboActive) {
   case 0:
@@ -1118,54 +1117,97 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
 }
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   Pacientes *paciente = temp->ListaPacientes;
-  int flag = 0;
-  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label, *labelTit, *dialog;
+  int flag = 0, numCita = 1, i = 0;
+  Historia* clinica;
+  GtkWidget *window, *swin, *viewport, *table1, *vbox, *label[10], *labelTit, *dialog;
   GtkAdjustment *horizontal, *vertical;
-  char titulo[200];
+  char titulo[200], auxiliar[200], aux2[200];
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   pango_attr_list_insert(attrlist, attr);
-  unsigned int i, j;
   while(paciente != NULL && flag == 0){
   	if(strcmp(paciente->Nombre, nombre) == 0)
   		flag = 1;
   	else
   		paciente = paciente->sig;
   }
-
   if(flag == 0 || paciente->HClinica == NULL){
     dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se ha encontrado la historia médica de este paciente");
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     return;
   }
-
+  clinica = paciente->HClinica;
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "Historial Médico");
   gtk_container_set_border_width (GTK_CONTAINER (window), 10);
   gtk_widget_set_size_request (window, 500, 400);
-  g_signal_connect (G_OBJECT (window), "destroy",
-  G_CALLBACK (gtk_main_quit), NULL);
-
+  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   strcpy(titulo, "Historial Médico de ");
   strcat(titulo, nombre);
   labelTit = gtk_label_new (titulo);
   gtk_misc_set_alignment (GTK_MISC(labelTit), 0, 0.5);
   pango_attr_list_insert(attrlist, attr);
   gtk_label_set_attributes(GTK_LABEL(labelTit), attrlist);
-  table1 = gtk_table_new (10, 10, FALSE);
-  gtk_table_set_row_spacings (GTK_TABLE (table1), 5);
-  gtk_table_set_col_spacings (GTK_TABLE (table1), 5);
-  /* Pack each table with 100 buttons. */
-  for (i = 0; i < 10; i++){
-    for (j = 0; j < 100; j++){
-
-      label = gtk_label_new("Hola como estas me llamo cesar arellano y estoy escribiendo..");
-      gtk_table_attach_defaults (GTK_TABLE(table1), label, i, i+1,j, j + 1);
-    }
+  table1 = gtk_table_new (5, 5, FALSE);
+  gtk_table_set_row_spacings (GTK_TABLE (table1), 0);
+  gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
+  while (clinica != NULL) {
+    strcpy(auxiliar, "Cita número ");
+    sprintf(aux2, "%d", numCita);
+    strcat(auxiliar, aux2);
+    strcat(auxiliar, ": ");
+    label[0] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[0]), 0, 0.3);
+    pango_attr_list_insert(attrlist, attr);
+    gtk_label_set_attributes(GTK_LABEL(label[0]), attrlist);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[0], 0, 1, i, i+1);
+    auxiliar[0] = '\0';
+    label[6] = gtk_label_new(NULL);
+    i+=2;
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[6], 0, 1, i, i+1);
+    i+= 2;
+    strcpy(auxiliar, "Doctor que atendió: ");
+    strcat(auxiliar, clinica->NombreDoctor);
+    label[1] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
+    gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 0, 1, i, i+1);
+    i+= 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Fecha de la cita: ");
+    strcat(auxiliar, clinica->FechaCita);
+    label[2] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[2]), 0, 0);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[2], 0, 1, i, i+1);
+    i+= 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Diagnostico: ");
+    strcat(auxiliar, clinica->Diagnostico);
+    label[3] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[3]), 0, 0);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[3], 0, 1, i, i+1);
+    i+= 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Tratamiento: ");
+    strcat(auxiliar, clinica->Tratamiento);
+    label[4] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[4]), 0, 0);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[4], 0, 1, i, i+1);
+    i+= 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Anotaciones: ");
+    strcat(auxiliar, clinica->Anotaciones);
+    label[5] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[5]), 0, 0);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[5], 0, 1, i, i+1);
+    label[6] = gtk_label_new(NULL);
+    i+=2;
+    gtk_table_attach_defaults (GTK_TABLE(table1), label[6], 0, 1, i, i+1);
+    clinica = clinica->sig;
+    i+= 2;
+    numCita++;
   }
-/* Create a scrolled window and a viewport, each with one table. Use the
-* adjustments in the scrolled window to synchronize both containers. */
   swin = gtk_scrolled_window_new (NULL, NULL);
   horizontal = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (swin));
   vertical = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (swin));
@@ -1178,6 +1220,7 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   gtk_box_pack_start (GTK_BOX (vbox), labelTit, FALSE, FALSE, 20);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
+
   gtk_widget_show_all (window);
   gtk_main();
 }
