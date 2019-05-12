@@ -1346,16 +1346,16 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
       if(i == 3 || i == 4){
         if(i == 3){
           label[i] = gtk_label_new("Status: ");
-	         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 30);
+	         gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
         }
         if(i == 3){
           Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "Activo");
-          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 10);
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
         }else{
           Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "Inactivo");
-          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 15);
-          botonesA[i] = AddButton(horizontales[3], "Actualizar", botonesControlA, 4);
-	        gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 0);
+          label[i] = gtk_label_new(NULL);
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), label[i], TRUE, TRUE, 20);
         }
         gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
       }else{
