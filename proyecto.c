@@ -70,7 +70,7 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
 void entrandoSistema(ParametrosListas*);
-GtkWidget* menu();
+GtkWidget* menu(ParametrosListas* Listas);
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
 void botonesControlA(GtkButton* boton, gpointer data);
@@ -91,6 +91,7 @@ void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente);
 void crearCita(GtkWidget* boton, gpointer data);
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
+void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -424,7 +425,7 @@ void entrandoSistema(ParametrosListas* Listas){
   gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
   gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
-  menuP = menu(); // Creando el menu
+  menuP = menu(Listas); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
 
   cajatitulo = gtk_hbox_new (TRUE, 0); //Creando la caja del encabezado
@@ -541,7 +542,7 @@ void respuestaMenu(GtkWidget* menu, gpointer data){
   }
 }
 // Funcion que crea el menu
-GtkWidget* menu(){
+GtkWidget* menu(ParametrosListas* Listas){
   GtkWidget* menu, *doctoresitem, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem, *acercade, *acercadeitem;
   // Creando menu
   docs = gtk_menu_new();
@@ -578,7 +579,7 @@ GtkWidget* menu(){
   // Creando los submenus para pacientes
   pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
   gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
-  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(DesplegarListaPacientes), (gpointer)Listas);
   // Creando los submenus para ayuda
   ayudaitem = gtk_menu_item_new_with_label("Ayuda general del sistema");
   gtk_menu_shell_append(GTK_MENU_SHELL(ayuda), ayudaitem);
@@ -978,7 +979,7 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   gtk_window_set_resizable(GTK_WINDOW(Entradas->window), FALSE);
   gtk_window_set_position(GTK_WINDOW(Entradas->window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(Entradas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
-  menuP = menu(); // Creando el menu
+  menuP = menu(datos); // Creando el menu
   gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
   gtk_box_pack_start(GTK_BOX(vertical), titulo, 0, 0, 0);
   label[0] = gtk_label_new("Paciente: ");
@@ -1221,6 +1222,17 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
 
+  gtk_widget_show_all (window);
+  gtk_main();
+}
+void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
+  GtkWidget* window;
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Lista de pacientes");
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  gtk_widget_set_size_request (window, 500, 400);
+  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_widget_show_all (window);
   gtk_main();
 }
