@@ -93,7 +93,7 @@ void crearCita(GtkWidget* boton, gpointer data);
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas);
-void interfazDoctores(GtkWidget* menu, gpointer Parametros);
+void interfazDoctores(GtkWidget* item, gpointer Parametros);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -1301,18 +1301,126 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
   gtk_main();
 }
 
-void interfazDoctores(GtkWidget* menu, gpointer Parametros){
-  ParametrosListas* datos = (ParametrosListas*)Parametros;
-  gtk_widget_destroy(datos->window);
-  datos->window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (datos->window), "Sistema de Informacióm Médica (Doctores)");
-  gtk_container_set_border_width (GTK_CONTAINER (datos->window), 10);
-  gtk_widget_set_size_request (datos->window, 600, 650);
-  g_signal_connect (G_OBJECT (datos->window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  gtk_window_set_position(GTK_WINDOW(datos->window), GTK_WIN_POS_CENTER_ALWAYS);
+void interfazDoctores(GtkWidget* item, gpointer Parametros){
+  ParametrosListas* Listas = (ParametrosListas*)Parametros;
+  gtk_widget_destroy(Listas->window);
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
+  GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
+  GtkAdjustment *ajuste;
+  char campos[11][200];
+  copiarStrings(campos);
+  ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.5, 0.2, 2.5, 0));
+  // Creando las cajas
+  containerDown = gtk_hbox_new(TRUE, 10);
+  vertical = gtk_vbox_new(0, 0);
+  for(int i = 0; i < 12; i++){
+    if(i == 3)
+      horizontales[i] = gtk_hbox_new(FALSE, 37);
+    else
+      horizontales[i] = gtk_hbox_new(TRUE, 0);
+  }
+  horizontalA = gtk_hbox_new(TRUE, 2);
+  // Creando ventana principal
+  Listas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(Listas->window), "Sistema de información médica");
+  gtk_widget_set_size_request(Listas->window, 600, 650);
+  gtk_window_set_resizable(GTK_WINDOW(Listas->window), FALSE);
+  gtk_window_set_position(GTK_WINDOW(Listas->window), GTK_WIN_POS_CENTER_ALWAYS);
+  gtk_signal_connect(GTK_OBJECT(Listas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
+  menuP = menu(Listas); // Creando el menu
+  gtk_box_pack_start(GTK_BOX(vertical), menuP, 0, 0, 0);
+
+  cajatitulo = gtk_hbox_new (TRUE, 0); //Creando la caja del encabezado
+  titulo = gtk_label_new ("Administración de pacientes"); //Creando el encabezado
+  gtk_misc_set_alignment (GTK_MISC(titulo), 0.05, 0.5); //Alineando a la izquierda
+  pango_attr_list_insert(attrlist, attr); //Llamando a la lista de atributos
+  gtk_label_set_attributes(GTK_LABEL(titulo), attrlist); //Asignando atributos a título
+  gtk_box_pack_start (GTK_BOX (cajatitulo), titulo, TRUE, TRUE, 0); //Título -> CajaTitulo
+  gtk_box_pack_start (GTK_BOX (vertical), cajatitulo, TRUE, TRUE, 20); //CajaTitulo -> Vertical
+
+  // Elementos principales de la interfaz
+  for(int i = 0; i < 12; i++){
+    if(i < 11){
+      if(i == 3 || i == 4){
+        if(i == 3){
+          label[i] = gtk_label_new("Sexo: ");
+	  gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 35);
+        }
+        if(i == 3){
+          Listas->entry[i] = gtk_radio_button_new_with_label(NULL, "M");
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 35);
+        }else{
+          Listas->entry[i] = gtk_radio_button_new_with_label(gtk_radio_button_get_group(GTK_RADIO_BUTTON(Listas->entry[3])), "F");
+          gtk_box_pack_start(GTK_BOX(horizontales[3]), Listas->entry[i], FALSE, FALSE, 15);
+          botonesA[i] = AddButton(horizontales[3], "Actualizar", botonesControlA, 4);
+	  gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+        }
+        gtk_signal_connect(GTK_OBJECT(Listas->entry[i]), "toggled", GTK_SIGNAL_FUNC(radio), (gpointer)Listas);
+      }else{
+        label[i] = gtk_label_new(campos[i]);
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+        if(i == 7){
+          Listas->entry[i] = gtk_spin_button_new(ajuste, 0.1, 1);
+        }else{
+          if(i == 9){
+            Listas->entry[i] = gtk_combo_box_new_text();
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "A-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "B-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O+");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "O-");
+            gtk_combo_box_append_text(GTK_COMBO_BOX(Listas->entry[i]), "AB+");
+            gtk_combo_box_set_active(GTK_COMBO_BOX(Listas->entry[i]), 0);
+          }else
+            Listas->entry[i] = gtk_entry_new();
+        }
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+      }
+
+      if(i == 5   || i == 6){
+        gtk_entry_set_editable(GTK_ENTRY(Listas->entry[i]), FALSE);
+      }
+      if(i > 4){
+        invisible[i] = gtk_label_new(NULL);
+        gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
+      }
+      if(i > 0  && i <4){
+        if(i != 3){
+          botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
+          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+        }
+      }
+      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+    }else{
+      label[i] = gtk_label_new("Modificar/Crear fecnac: ");
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      Listas->calendar = gtk_calendar_new();
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->calendar, TRUE, TRUE, 0);
+      label[i] = gtk_label_new(NULL);
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+    }
+  }
+
+  // Creando boton de busqueda
+  boton = AddButton(horizontales[0], "Buscar", buscar, 1);
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(buscar), (gpointer)Listas);
+
+  botonesA[4] = AddButton(containerDown, "Actualizar", botonesControlA, 5);
+  gtk_signal_connect(GTK_OBJECT(botonesA[4]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+  botonLimpiar = AddButton(containerDown, "Act", botonesControlA, 6);
+  gtk_signal_connect(GTK_OBJECT(botonLimpiar), "clicked", GTK_SIGNAL_FUNC(limpiarCampos), (gpointer)Listas);
 
 
-
-  gtk_widget_show_all (datos->window);
+  invisible[10] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(vertical), horizontalA, TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), containerDown, TRUE, TRUE, 0);
+  invisible[10] = gtk_label_new(NULL);
+  gtk_box_pack_start(GTK_BOX(vertical), invisible[10], TRUE, TRUE, 0);
+  gtk_container_add(GTK_CONTAINER(Listas->window), vertical);
+  gtk_widget_show_all(Listas->window);
   gtk_main();
 }
