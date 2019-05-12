@@ -1402,6 +1402,15 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
     }
+    if(i == 11){
+      label[11] = gtk_label_new("Telefono de urgencias");
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      Listas->entry[i] = gtk_entry_new();
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), Listas->entry[i], TRUE, TRUE, 0);
+      label[11] = gtk_label_new(NULL);
+      gtk_box_pack_start(GTK_BOX(horizontales[i]), label[i], TRUE, TRUE, 0);
+      gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
+    }
   }
 
   // Creando boton de busqueda
@@ -1530,6 +1539,7 @@ void buscar2(GtkWidget* widget, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), temp->ConsultorioAsignado);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[8]), temp->diasConsulta);
       gtk_entry_set_text(GTK_ENTRY(datos->entry[10]), temp->Password);
+      gtk_entry_set_text(GTK_ENTRY(datos->entry[11]), temp->telefonoUrgencias);
       if(strcmp(temp->HorarioConsulta, "07:00 - 15:00") == 0)
         gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
 
@@ -1543,5 +1553,67 @@ void buscar2(GtkWidget* widget, gpointer data){
   }
 }
 void botonesControlDoc(GtkWidget* button, gpointer data){
-  printf("Botones de control de doctores\n");
+/*  ParametrosListas* datos = (ParametrosListas*)data;
+  int validacion[7];
+  char boton[200];
+  int sexo, comboActive;
+  const gchar* nombre, *especialidad1, *especialidad2, *status, *telefono, *direccion, *consultorio, *dias, *horario, *contra;
+  guint year, month, day;
+  strcpy(boton, gtk_widget_get_name(GTK_WIDGET(gtk_button_get_image(button))));
+  nombre = gtk_entry_get_text(GTK_ENTRY(datos->entry[0]));
+  direccion = gtk_entry_get_text(GTK_ENTRY(datos->entry[1]));
+  telefono = gtk_entry_get_text(GTK_ENTRY(datos->entry[2]));
+  sexo = datos->sexo;
+  estatura = gtk_entry_get_text(GTK_ENTRY(datos->entry[7]));
+  alergias = gtk_entry_get_text(GTK_ENTRY(datos->entry[8]));
+  comboActive = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->entry[9]));
+  switch (comboActive) {
+  case 0:
+    tipoSangre = "A+";
+    break;
+  case 1:
+    tipoSangre = "A-";
+    break;
+  case 2:
+    tipoSangre = "B+";
+    break;
+  case 3:
+    tipoSangre = "B-";
+    break;
+  case 4:
+    tipoSangre = "O+";
+    break;
+  case 5:
+    tipoSangre = "O-";
+    break;
+  case 6:
+    tipoSangre = "AB+";
+    break;
+  }
+  padecimientosCronicos = gtk_entry_get_text(GTK_ENTRY(datos->entry[10]));
+  gtk_calendar_get_date(GTK_CALENDAR(datos->calendar), &year, &month, &day);
+  validacion[0] = validarLetras(nombre, "Nombre paciente");
+  validacion[1] = validarNumeros(telefono, "Telefono");
+  validacion[2] = validarNumeros(estatura, "Estatura");
+  validacion[3] = validarLetras(alergias, "Alergias");
+  validacion[4] = validarLetras(tipoSangre, "Tipo de sangre");
+  validacion[5] = validarLetras(padecimientosCronicos, "PadecimientosCronicos");
+  for(int i = 0; i < 6; i++)
+    if(validacion[i] == 1)
+      return;
+  month++;*/
+
+  /*if(strcmp("Actualizar", boton) == 0)
+    modificarPaciente(datos->nombreBuscado, nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, datos->ListaPacientes, datos->entry[5], datos->entry[6], datos->flag);
+  if(strcmp("NuevoPaciente", boton) == 0){
+    nuevoPaciente(nombre, direccion, telefono, sexo, estatura, alergias, tipoSangre, padecimientosCronicos, day, month, year, &datos->ListaPacientes, datos->entry[5], datos->entry[6]);
+    strcpy(datos->nombreBuscado, nombre);
+  }
+  if(strcmp(boton, "NuevaCita") == 0){
+    generarCita(datos, nombre);
+    return;
+  }
+  if(strcmp("Historial", boton) == 0){
+    mostrarHistorial(datos,nombre);
+  }*/
 }
