@@ -1390,8 +1390,12 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
         gtk_box_pack_start(GTK_BOX(horizontales[i]), invisible[i], TRUE, TRUE, 0);
       }
       if(i > 0  && i <4){
-        if(i != 3){
+        if(i == 1){
           botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
+          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+        }
+        if(i == 2){
+          botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
           gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
         }
       }
