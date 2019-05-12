@@ -1468,8 +1468,6 @@ void buscar2(GtkWidget* widget, gpointer data){
       gtk_dialog_run(GTK_DIALOG(dialog));
       gtk_widget_destroy(dialog);
       datos->nombreBuscado[0] = '\0';
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
-      gtk_entry_set_text(GTK_ENTRY(datos->entry[2]), "");
       gtk_entry_set_text(GTK_ENTRY(datos->entry[5]), "");
       gtk_entry_set_text(GTK_ENTRY(datos->entry[6]), "");
       gtk_entry_set_text(GTK_ENTRY(datos->entry[7]), "");
