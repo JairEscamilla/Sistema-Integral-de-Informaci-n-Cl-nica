@@ -97,6 +97,7 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp);
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre);
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas);
 void interfazDoctores(GtkWidget* item, gpointer Parametros);
+void botonesControlDoc(GtkWidget* button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -1392,11 +1393,11 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
       if(i > 0  && i <4){
         if(i == 1){
           botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, i+1);
-          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlDoc), (gpointer)Listas);
         }
         if(i == 2){
           botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
-          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlA), (gpointer)Listas);
+          gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlDoc), (gpointer)Listas);
         }
       }
       gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
@@ -1464,7 +1465,7 @@ void buscar2(GtkWidget* widget, gpointer data){
         temp = temp->sig;
     }
     if(flag == 0){
-      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "No se ha encontrado el paciente");
+      dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK, "No se ha encontrado el doctor");
       gtk_dialog_run(GTK_DIALOG(dialog));
       gtk_widget_destroy(dialog);
       datos->nombreBuscado[0] = '\0';
@@ -1540,4 +1541,7 @@ void buscar2(GtkWidget* widget, gpointer data){
 
     }
   }
+}
+void botonesControlDoc(GtkWidget* button, gpointer data){
+  printf("Botones de control de doctores\n");
 }
