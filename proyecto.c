@@ -104,6 +104,7 @@ void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telef
 void Inserta_Inicio2(Doctores **ListaPacientes, Doctores *nuevo);
 void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo);
 void listadoDoctores(GtkWidget* item, gpointer data);
+void creditos();
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -543,7 +544,6 @@ void entrandoSistema(ParametrosListas* Listas){
 
 // Funcion para responder a las opciones del menu
 void respuestaMenu(GtkWidget* menu, gpointer data){
-  GtkWidget* dialog;
   if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Altas/Modificaciones") == 0)
     printf("Mostrará altas y modificaciones\n");
   if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Listado de doctores") == 0)
@@ -555,9 +555,7 @@ void respuestaMenu(GtkWidget* menu, gpointer data){
   if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Ayuda general del sistema") == 0)
     printf("Ayuda del sistema\n");
   if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Desarrolladores") == 0){
-    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "Desarrolladores\nCésar Mauricio Arellano Velasquez\nRaúl González Portillo\nAllan Jair Escamilla Hernández\n");
-    gtk_dialog_run(GTK_DIALOG(dialog));
-    gtk_widget_destroy(dialog);
+    creditos();
   }
 }
 // Funcion que crea el menu
@@ -1862,4 +1860,44 @@ void listadoDoctores(GtkWidget* item, gpointer data){
 
   gtk_widget_show_all (window);
   gtk_main();
+}
+void creditos(){
+  GtkWidget *dialog;
+  GdkPixbuf *logo;
+  GError *error = NULL;
+  const gchar *authors[] = {
+    "César Mauricio Arellano Velásquez",
+    "Raúl González Portillo",
+    "Allan Jair Escamilla Hernández",
+    NULL
+  };
+  const gchar *documenters[] = {
+    "César Mauricio Arellano Velásquez",
+    "Raúl González Portillo",
+    "Allan Jair Escamilla Hernández",
+    "Jorge Emilio Garcia Contreras (Tester)",
+    NULL
+  };
+  dialog = gtk_about_dialog_new ();
+  logo = gdk_pixbuf_new_from_file ("Images/wallpaper.jpeg", &error);
+  if (error == NULL)
+    gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (dialog), logo);
+  else{
+    if (error->domain == GDK_PIXBUF_ERROR)
+      g_print ("GdkPixbufError: %s\n", error->message);
+    else if (error->domain == G_FILE_ERROR)
+      g_print ("GFileError: %s\n", error->message);
+    else
+      g_print ("An error in the domain: %d has occurred!\n", error->domain);
+    g_error_free (error);
+  }
+  gtk_about_dialog_set_name (GTK_ABOUT_DIALOG (dialog), "Desarrolladores");
+  gtk_about_dialog_set_copyright (GTK_ABOUT_DIALOG (dialog),"(C) 2019 Universidad Iberoamericana");
+  gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (dialog), "Sistema de información médica versión 1.0");
+  gtk_about_dialog_set_license (GTK_ABOUT_DIALOG (dialog), "Para uso libre xd");
+  gtk_about_dialog_set_website (GTK_ABOUT_DIALOG (dialog),"https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica");
+  gtk_about_dialog_set_website_label (GTK_ABOUT_DIALOG (dialog),"https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica");
+  gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
+  gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (dialog), documenters);
+  gtk_dialog_run (GTK_DIALOG (dialog));
 }
