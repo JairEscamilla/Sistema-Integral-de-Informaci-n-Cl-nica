@@ -330,6 +330,8 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
   gtk_widget_set_name (historial, "Historial");
   GtkWidget *vaciar = gtk_image_new_from_file ("Iconos/Vaciar.png");
   gtk_widget_set_name (vaciar, "Vaciar");
+  GtkWidget *nuevodoctor = gtk_image_new_from_file ("Iconos/NuevoDoctor.png");
+  gtk_widget_set_name (nuevodoctor, "NuevoDoctor");
   GtkWidget *button;
 
   if(flag == 0){
@@ -371,6 +373,12 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
   if(flag == 6){
     button = gtk_button_new_with_label("");
     gtk_button_set_image (GTK_BUTTON (button), vaciar);
+    gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+    gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
+  }
+  if(flag == 7){
+    button = gtk_button_new_with_label("");
+    gtk_button_set_image (GTK_BUTTON (button), nuevodoctor);
     gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
     gtk_box_pack_start(GTK_BOX(theBox),button,TRUE,TRUE, 15);
   }
@@ -1406,7 +1414,7 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
           gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlDoc), (gpointer)Listas);
         }
         if(i == 2){
-          botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 4);
+          botonesA[i] = AddButton(horizontales[i], "Actualizar", botonesControlA, 7);
           gtk_signal_connect(GTK_OBJECT(botonesA[i]), "clicked", GTK_SIGNAL_FUNC(botonesControlDoc), (gpointer)Listas);
         }
       }
@@ -1671,7 +1679,7 @@ void botonesControlDoc(GtkWidget* button, gpointer data){
 
   if(strcmp("Actualizar", boton) == 0)
     modificarDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, datos->ListaDoctores);
-  if(strcmp("NuevoPaciente", boton) == 0){
+  if(strcmp("NuevoDoctor", boton) == 0){
     nuevoDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, &datos->ListaDoctores);
   }
 }
@@ -1736,7 +1744,7 @@ void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telef
     temp3 = temp3->sig;
   }
   if(Bandera == 1){
-    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se puede agregar este paciente debido a que ya existe uno con el mismo nombre");
+    dialog = gtk_message_dialog_new(NULL, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "No se puede agregar este doctor debido a que ya existe uno con el mismo nombre");
     gtk_dialog_run(GTK_DIALOG(dialog));
     gtk_widget_destroy(dialog);
     return;
