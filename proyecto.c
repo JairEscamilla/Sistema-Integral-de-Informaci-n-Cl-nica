@@ -134,7 +134,6 @@ int main(int argc, char *argv[]) {
 void loger(Doctores* Lista, Login* Parametros, int* band){
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
-  pango_attr_list_insert(attrlist, attr);
   // Creando ventana para login
   Parametros->Lista = Lista;
   Parametros->bandera = 0;
@@ -433,7 +432,7 @@ void entrandoSistema(ParametrosListas* Listas){
   // Creando ventana principal
   Listas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(Listas->window), "Sistema de información médica");
-  gtk_widget_set_size_request(Listas->window, 600, 650);
+  gtk_widget_set_size_request(Listas->window, 600, 750);
   gtk_window_set_resizable(GTK_WINDOW(Listas->window), FALSE);
   gtk_window_set_position(GTK_WINDOW(Listas->window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(Listas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
@@ -975,18 +974,24 @@ void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo){
 void generarCita(ParametrosListas* datos, const gchar* nombre){
   GtkSettings *default_settings = gtk_settings_get_default();
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
+  GtkWidget *aceptar = gtk_image_new_from_file ("Iconos/Aceptar.png");
+  PangoAttrList *attrlist = pango_attr_list_new();
+  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   GtkWidget *menuP, *vertical, *label[10], *horizontales[10], *invisible[3], *boton, *titulo;
   GenerarHistoria* Entradas = (GenerarHistoria*)malloc(sizeof(GenerarHistoria));
   Entradas->ListaPacientes = datos->ListaPacientes;
   char date[100];
   getDate(date);
   titulo = gtk_label_new("Generar Cita");
-  vertical = gtk_vbox_new(FALSE, 0);
+  gtk_misc_set_alignment (GTK_MISC(titulo), 0.05, 0.5);
+  pango_attr_list_insert(attrlist, attr);
+  gtk_label_set_attributes(GTK_LABEL(titulo), attrlist);
+  vertical = gtk_vbox_new(FALSE, 15);
   for(int i = 0; i < 10; i++)
     horizontales[i] = gtk_hbox_new(TRUE, 0);
   Entradas->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title(GTK_WINDOW(Entradas->window), "Sistema de información médica");
-  gtk_widget_set_size_request(Entradas->window, 450, 500);
+  gtk_widget_set_size_request(Entradas->window, 450, 450);
   gtk_window_set_resizable(GTK_WINDOW(Entradas->window), FALSE);
   gtk_window_set_position(GTK_WINDOW(Entradas->window), GTK_WIN_POS_CENTER_ALWAYS);
   gtk_signal_connect(GTK_OBJECT(Entradas->window), "destroy", GTK_SIGNAL_FUNC(destroy), NULL);
@@ -1013,16 +1018,16 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
     gtk_box_pack_start(GTK_BOX(horizontales[i]), Entradas->entry[i], TRUE, TRUE, 20);
     gtk_box_pack_start(GTK_BOX(vertical), horizontales[i], TRUE, TRUE, 0);
   }
-  boton = gtk_button_new_from_stock(GTK_STOCK_OK);
+  boton = gtk_button_new_with_label("");
+  gtk_button_set_image (GTK_BUTTON (boton), aceptar);
+  gtk_button_set_relief (GTK_BUTTON (boton), GTK_RELIEF_NONE);
   gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(crearCita), (gpointer)Entradas);
   invisible[0] = gtk_label_new(NULL);
   invisible[1] = gtk_label_new(NULL);
   gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[0],TRUE,TRUE, 0);
   gtk_box_pack_start(GTK_BOX(horizontales[6]),boton,TRUE,TRUE, 0);
   gtk_box_pack_start(GTK_BOX(horizontales[6]),invisible[1],TRUE,TRUE, 0);
-  gtk_box_pack_start(GTK_BOX(vertical), horizontales[6],TRUE,TRUE, 0);
-  invisible[2] = gtk_label_new(NULL);
-  gtk_box_pack_start(GTK_BOX(vertical), invisible[2],TRUE,TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(vertical), horizontales[6],TRUE,TRUE, 15);
   gtk_container_add(GTK_CONTAINER(Entradas->window), vertical);
   gtk_widget_show_all(Entradas->window);
   gtk_main();
