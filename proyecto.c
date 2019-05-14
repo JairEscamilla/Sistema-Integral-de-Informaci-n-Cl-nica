@@ -105,6 +105,7 @@ void Inserta_Inicio2(Doctores **ListaPacientes, Doctores *nuevo);
 void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo);
 void listadoDoctores(GtkWidget* item, gpointer data);
 void creditos();
+void preguntarEspecialidad(GtkWidget* item, gpointer Listas);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -592,7 +593,7 @@ GtkWidget* menu(ParametrosListas* Listas){
   gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(listadoDoctores), (gpointer)Listas);
   doctoresitem = gtk_menu_item_new_with_label("Desplegar doctores por especialidad");
   gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
-  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
+  gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(preguntarEspecialidad), (gpointer)Listas);
   // Creando los submenus para pacientes
   pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
   gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
@@ -1838,6 +1839,24 @@ void listadoDoctores(GtkWidget* item, gpointer data){
     label[1] = gtk_label_new(auxiliar);
     gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
     gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
+    i += 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Especialidad 1: ");
+    strcat(auxiliar, ListaPacientes->Especialidad1);
+    label[1] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
+    gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
+    i += 2;
+    auxiliar[0] = '\0';
+    strcpy(auxiliar, "Especialidad 2: ");
+    strcat(auxiliar, ListaPacientes->Especialidad2);
+    label[1] = gtk_label_new(auxiliar);
+    gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
+    gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
+    i += 2;
+    label[1] = gtk_label_new(NULL);
+    gtk_misc_set_alignment (GTK_MISC(label[1]), 0, 0);
+    gtk_table_attach_defaults(GTK_TABLE(table1), label[1], 1, 2, i, i+1);
     i+= 2;
     auxiliar[0] = '\0';
     ListaPacientes = ListaPacientes->sig;
@@ -1900,4 +1919,38 @@ void creditos(){
   gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
   gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (dialog), documenters);
   gtk_dialog_run (GTK_DIALOG (dialog));
+}
+
+void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
+  GtkWidget* window, *vbox, *label, *hbox, *combo, *boton;
+  vbox = gtk_vbox_new(FALSE, 0);
+  hbox = gtk_hbox_new(TRUE, 0);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Lista de doctores por especialidad");
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  gtk_widget_set_size_request (window, 250, 150);
+  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+  label = gtk_label_new("Ingresar la especilidad por ver: ");
+  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
+  combo = gtk_combo_box_new_text();
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Anatomía");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Cirugía General");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Ginecología y Obstetricia");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Medicina General");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Ortopedia");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Pediatria");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Otorrinolaringólogo");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Radiología e imágen");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
+
+  boton = gtk_button_new_with_label("Aceptar");
+  label = gtk_label_new(NULL);
+  gtk_box_pack_start (GTK_BOX (hbox), combo, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), boton, FALSE, FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_widget_show_all (window);
+  gtk_main();
 }
