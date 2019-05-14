@@ -596,6 +596,9 @@ GtkWidget* menu(ParametrosListas* Listas){
   gtk_menu_shell_append(GTK_MENU_SHELL(docs), doctoresitem);
   gtk_signal_connect(GTK_OBJECT(doctoresitem), "activate", GTK_SIGNAL_FUNC(preguntarEspecialidad), (gpointer)Listas);
   // Creando los submenus para pacientes
+  pacientesitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
+  gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
+  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(DesplegarListaPacientes), (gpointer)Listas);
   pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
   gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
   gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(DesplegarListaPacientes), (gpointer)Listas);
@@ -2018,7 +2021,6 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   table1 = gtk_table_new (5, 5, FALSE);
   gtk_table_set_row_spacings (GTK_TABLE (table1), 0);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
-  //gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, 0, 1);
 
   while (temp != NULL) {
     if(strcmp(temp->Especialidad1, especialidad) == 0 || strcmp(temp->Especialidad2, especialidad) == 0){
