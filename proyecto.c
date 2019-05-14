@@ -1280,14 +1280,13 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
   gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
 
   while (ListaPacientes != NULL) {
-    strcpy(auxiliar, "Paciente número ");
+    strcpy(auxiliar, "Paciente ");
     sprintf(aux2, "%d", numPaciente+1 );
     strcat(auxiliar, aux2);
     strcat(auxiliar, ": ");
     label[0] = gtk_label_new(auxiliar);
     gtk_misc_set_alignment (GTK_MISC(label[0]), 0, 0);
-    pango_attr_list_insert(attrlist, attr);
-    gtk_label_set_attributes(GTK_LABEL(label[0]), attrlist);
+
     gtk_table_attach_defaults (GTK_TABLE(table1), label[0], 0, 1, i, i+1);
     auxiliar[0] = '\0';
     strcpy(auxiliar, ListaPacientes->Nombre);
@@ -1922,7 +1921,10 @@ void creditos(){
 }
 
 void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
+  GtkSettings *default_settings = gtk_settings_get_default();
+  g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
   GtkWidget* window, *vbox, *label, *hbox, *combo, *boton;
+  GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
   vbox = gtk_vbox_new(FALSE, 0);
   hbox = gtk_hbox_new(TRUE, 0);
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
@@ -1944,7 +1946,9 @@ void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
   gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Radiología e imágen");
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
-  boton = gtk_button_new_with_label("Aceptar");
+  boton = gtk_button_new_with_label("");
+  gtk_button_set_image (GTK_BUTTON (boton), buscar);
+  gtk_button_set_relief (GTK_BUTTON (boton), GTK_RELIEF_NONE);
   label = gtk_label_new(NULL);
   gtk_box_pack_start (GTK_BOX (hbox), combo, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
