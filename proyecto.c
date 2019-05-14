@@ -70,7 +70,7 @@ void destroy(GtkWidget* wideget, gpointer data);
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag);
 void iniciarSesion(GtkButton *button, gpointer data);
 void loger(Doctores*, Login*, int*);
-void entrandoSistema(ParametrosListas*);
+void entrandoSistema(GtkWidget* button, gpointer data);
 GtkWidget* menu(ParametrosListas* Listas);
 void respuestaMenu(GtkWidget* menu, gpointer data);
 void buscar();
@@ -109,6 +109,7 @@ void preguntarEspecialidad(GtkWidget* item, gpointer Listas);
 void desplegarporEspecialidad(GtkWidget* button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
+  GtkWidget* button = gtk_button_new_with_label("");
   Doctores* ListaDoctores = NULL;
   Pacientes* ListaPacientes = NULL;
   Login* Parametros = (Login*)malloc(sizeof(Login)); // Parametros para el inicio de sesion
@@ -124,7 +125,7 @@ int main(int argc, char *argv[]) {
   loger(ListaDoctores, Parametros, &flag); // Despliega la ventana de inicio de sesion
   strcpy(Plists->LoggedDoctor, Parametros->Doctor);
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
-    entrandoSistema(Plists);
+    entrandoSistema(button, (gpointer)Plists);
   }
   g_free(Parametros);
   g_free(Plists);
@@ -422,7 +423,8 @@ void iniciarSesion(GtkButton *button, gpointer data){
   }
 }
 // Funcion que muestra la ventana principal del sistema
-void entrandoSistema(ParametrosListas* Listas){
+void entrandoSistema(GtkWidget* button, gpointer data){
+  ParametrosListas* Listas = (ParametrosListas*)data;
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   GtkWidget* menuP, *vertical, *horizontales[11], *label[20], *invisible[11], *boton, *horizontalA, *botonesA[5], *botonLimpiar, *containerDown, *titulo, *cajatitulo;
@@ -430,6 +432,8 @@ void entrandoSistema(ParametrosListas* Listas){
   char campos[11][200];
   copiarStrings(campos);
   ajuste = GTK_ADJUSTMENT(gtk_adjustment_new(0.0, 0.0, 2.5, 0.2, 2.5, 0));
+  if(Listas->window != NULL)
+    gtk_widget_destroy(Listas->window);
   // Creando las cajas
   containerDown = gtk_hbox_new(TRUE, 10);
   vertical = gtk_vbox_new(0, 0);
@@ -598,7 +602,7 @@ GtkWidget* menu(ParametrosListas* Listas){
   // Creando los submenus para pacientes
   pacientesitem = gtk_menu_item_new_with_label("Altas/Modificaciones");
   gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
-  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(DesplegarListaPacientes), (gpointer)Listas);
+  gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(entrandoSistema), (gpointer)Listas);
   pacientesitem = gtk_menu_item_new_with_label("Desplegar lista de pacientes");
   gtk_menu_shell_append(GTK_MENU_SHELL(pacientes), pacientesitem);
   gtk_signal_connect(GTK_OBJECT(pacientesitem), "activate", GTK_SIGNAL_FUNC(DesplegarListaPacientes), (gpointer)Listas);
