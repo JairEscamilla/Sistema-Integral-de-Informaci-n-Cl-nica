@@ -1,4 +1,19 @@
-// Incluyendo las funciones
+/**
+* @file proyecto.c
+*
+* @brief Este programa esencialmente pretende ser un sistema funcional
+* para un consultorio médico que desea poder almacenar y buscar de forma
+* sencilla y segura información que respecta a los médicos que laboran
+* en un consultorio, pacientes del mismo, así como la historia clínica
+* de cada paciente.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernández Allan Jair
+* González Portillo Raúl
+* @date 14/05/2019
+*/
+
+// Incluyendo librerias
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -62,6 +77,7 @@ typedef struct _defGeneraHistoria{
   GtkWidget* window;
   Pacientes* ListaPacientes;
 }GenerarHistoria;
+
 // Prototipos de las funciones
 void leerListaDoctores(Doctores**);
 void leerListaPacientes(Pacientes**);
@@ -109,6 +125,7 @@ void preguntarEspecialidad(GtkWidget* item, gpointer Listas);
 void desplegarporEspecialidad(GtkWidget* button, gpointer data);
 void help(GtkWidget* item, gpointer data);
 void liberarMemoria(Doctores** doc, Pacientes** pac);
+
 // Función principal
 int main(int argc, char *argv[]) {
   GtkWidget* button = gtk_button_new_with_label("");
@@ -134,10 +151,28 @@ int main(int argc, char *argv[]) {
   g_free(Plists);
   return 0;
 }
+
 // Desarrollando las funciones
 
+/*
+* En esta función se genera la ventana de login, y en esta misma el botón de Iniciar
+* Sesión que al ser presionado posteriormente llamará a una función que permita
+* verificar si existe el usuario y contraseña para dar entrada al sistema.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Lista
+* Recibe los doctores registrados
+* @param *Parametros
+* Recibe los datos de la entrybox de usuario y contraseña
+* @param *band
+* Bandera que regresa si el usuario puede acceder al sistema.
+* @return
+*
+*/
 
-// Funcion para desplegar la ventana de inicio de sesion
 void loger(Doctores* Lista, Login* Parametros, int* band){
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
@@ -191,7 +226,22 @@ void loger(Doctores* Lista, Login* Parametros, int* band){
   gtk_main();
   *band =  Parametros->bandera;
 }
-// Función para leer la lista de doctores
+
+/*
+* Con esta función se obtienen los datos de todos los doctores a través del archivo
+* doctores.txt, el cual los lee y después carga a la lista dinámica para poder
+* trabajar con ella.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Lista
+* Recibe los doctores registrados
+* @return
+*
+*/
+
 void leerListaDoctores(Doctores** Lista){
   char Name[200];
   Doctores* Nuevo, *temp;
@@ -237,7 +287,22 @@ void leerListaDoctores(Doctores** Lista){
   }
   fclose(Archivo);
 }
-// Funcion para leer lista de pacientes
+
+/*
+* Esta función realiza las mismas instrucciones que leerListaDoctores, sólo que
+* en este caso se guarda la información de todos los pacientes a la correspondiente
+* lista dinámica.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Lista
+* Recibe los pacientes registrados
+* @return
+*
+*/
+
 void leerListaPacientes(Pacientes** Lista){
   Pacientes* Nuevo, *temp;
   char Nombre[200];
@@ -271,7 +336,22 @@ void leerListaPacientes(Pacientes** Lista){
     fclose(Archivo);
   }
 }
-// Funcion para leer el historial médico de cada paciente
+
+/*
+* Esta función lo que hace, es abrir cada expediente (historial médico) de cada
+* paciente que está en un archivo de texto individual, para después lo carga al
+* nodo de Historia para así visualizar en el programa toda su historia médica.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Lista
+* Recibe los pacientes registrados
+* @return
+*
+*/
+
 void leerHistorial(Pacientes* Lista){
   Pacientes* temp = Lista;
   Historia* clinic, *temp2;
@@ -315,11 +395,48 @@ void leerHistorial(Pacientes* Lista){
     temp = temp->sig;
   }
 }
-// Funcion que destruye un widget
+
+/*
+* Esta función tiene como objetivo cerrar la ventana principal y destruir el proceso
+* de la aplicación.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *wideget
+* Recibe el widget que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return GtkWidget
+*
+*/
+
 void destroy(GtkWidget* wideget, gpointer data){
   gtk_main_quit();
 }
-// Funcion que crea un boton
+
+/*
+* Esta función crea un botón, le coloca un texto o una imágen, lo asocia a cierta
+* función y lo añade a cierta caja.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *theBox
+* Recibe la caja en la que será colocado el botón.
+* @param *buttonText
+* Recibe el texto que tendrá el botón.
+* @param CallBackFunction
+* Recibe la función que va llamar el buton al ser presionado.
+* @param flag
+* Recibe la bandera para indicarle que imagen se le insertará.
+*
+* @return GtkWidget
+*
+*/
+
 GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBackFunction, int flag){
   GtkSettings *default_settings = gtk_settings_get_default();
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
@@ -393,7 +510,27 @@ GtkWidget *AddButton(GtkWidget *theBox, const gchar *buttonText, gpointer CallBa
   gtk_widget_show(button);
   return button;
 }
-// Funcion que inicia sesion haciendo la comparacion con la lista dinamica
+
+/*
+* En esta función se verifica si el usuario y contraseña introducidos en los entry
+* box están en la base de datos, si es que existe se le muestra al usuario una ventana
+* de dialogo que dice que “se ha logeado con éxito”, al darle aceptar destruirá ventanas
+* y le dejará entrar al sistema, si no se le presentará en pantalla al usuario una
+* ventana con el diálogo “no ha sido encontrado en la base de datos”, lo cual hará
+* que se le deniegue el acceso al sistema.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void iniciarSesion(GtkButton *button, gpointer data){
   GtkWidget* dialog;
   Login *datos = (Login*)data;
@@ -425,7 +562,24 @@ void iniciarSesion(GtkButton *button, gpointer data){
     gtk_entry_set_text(GTK_ENTRY(datos->entry[1]), "");
   }
 }
-// Funcion que muestra la ventana principal del sistema
+
+/*
+* En está función se le pasan las listas a través de una lista dinámica, la cual
+* estará presente en la ventana general de la aplicación, aquí también se generan
+* todos los elementos de la pantalla y se le añaden todas las funciones que va a tener.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void entrandoSistema(GtkWidget* button, gpointer data){
   ParametrosListas* Listas = (ParametrosListas*)data;
   PangoAttrList *attrlist = pango_attr_list_new();
@@ -551,7 +705,21 @@ void entrandoSistema(GtkWidget* button, gpointer data){
   gtk_main();
 }
 
-// Funcion para responder a las opciones del menu
+/*
+* Aquí se le asignan las funciones a cada opción del menubar, dependiendo de su
+* nombre.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *menu, data
+* Recibe el menu y los parametros como un apuntaddos
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
 void respuestaMenu(GtkWidget* menu, gpointer data){
   if(strcmp(gtk_menu_item_get_label(GTK_MENU_ITEM(menu)), "Altas/Modificaciones") == 0)
     printf("Mostrará altas y modificaciones\n");
@@ -567,7 +735,19 @@ void respuestaMenu(GtkWidget* menu, gpointer data){
     creditos();
   }
 }
-// Funcion que crea el menu
+/*
+* Funcion que crea un menu de usuario con las opciones pertinentes para el funcionamiento
+* del programa. Así mismo, retorna un Widget que contiene al menu creado.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Listas
+* Recibe las listas dinámicas que se usan para el correcto funcionamiento del sistema.
+* @return
+* retorna el Widget del menu
+*/
 GtkWidget* menu(ParametrosListas* Listas){
   GtkWidget* menu, *doctoresitem, *docs, *pacientes, *pacientesitem, *ayuda, *ayudaitem, *acercade, *acercadeitem;
   // Creando menu
@@ -619,7 +799,25 @@ GtkWidget* menu(ParametrosListas* Listas){
   gtk_signal_connect(GTK_OBJECT(acercadeitem), "activate", GTK_SIGNAL_FUNC(respuestaMenu), NULL);
   return menu;
 }
-// Funcion que busca a un paciente ingresado por el usuario
+
+/*
+* En esta función se lee el entrybox del nombre ingresado en este, para buscarlo
+* en la lista de paciente y así mostrar toda su información en dado caso que si esté
+* contenido de la lista dinámica, en dado caso que no se encuentre se mostrará un
+* diálogo de “Aún no hay pacientes registrados” o “No se ha encontrado el paciente”.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *widget
+* Recibe el widget con el que se va a realiza la busqueda del paciente.
+* @param data
+* Apuntadores a las listas dinámicas con las que se va a realizar la busqueda.
+* @return
+*
+*/
+
 void buscar(GtkWidget* widget, gpointer data){
   GtkWidget *dialog;
   const gchar* nombre;
@@ -692,7 +890,21 @@ void buscar(GtkWidget* widget, gpointer data){
     }
   }
 }
-// Funcion que copia strings de campos
+
+/*
+* En esta función le asigna los labels al arreglo bidimensional de la variable campos
+* para el apartado de Pacientes.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param campos[11][200]
+* Recibe como parametro un arreglo bidimensional en el cual se almacenarán los strings.
+* @return
+*
+*/
+
 void copiarStrings(char campos[11][200]){
   strcpy(campos[0], "Nombre paciente: ");
   strcpy(campos[1], "Direccion: ");
@@ -706,7 +918,23 @@ void copiarStrings(char campos[11][200]){
   strcpy(campos[9], "Tipo Sangre: ");
   strcpy(campos[10], "Padecimientos crónicos: ");
 }
-// Botones de control de la parte de abajo
+
+/*
+* Indica que hacer dependiendo del botón que presione.
+* Permite agregar paciente, modificar información,  generar cita ó muestra historial médico.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe un apuntador a las listas dinámicas donde se almacenan los datos a ser usados.
+* @return
+*
+*/
+
 void botonesControlA(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   int validacion[7];
@@ -772,6 +1000,52 @@ void botonesControlA(GtkButton *button, gpointer data){
     mostrarHistorial(datos,nombre);
   }
 }
+
+/*
+* Modifica todos los parámetros del paciente tanto en las listas dinámicas como en
+* el archivo de pacientes.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *nombreBuscado
+* Recibe el nombre que el usuario buscó en un principio
+* @param *nombre
+* Recibe el nombre que había en la entry box; si el usuario modificó el nombre del
+* paciente, este no coincidirá con el nombre guardado en nombreBuscado
+* @param *direccion
+* Recibe la dirección del paciente
+* @param *telefono
+* Recibe el teléfono del paciente
+* @param sexo
+* Recibe el sexo del paciente
+* @param *estatura
+* Recibe la estatura del paciente
+* @param *alergias
+* Recibe las alergias del paciente
+* @param *tipoSangre
+* Recibe el tipo de sangre del paciente
+* @param *padecimientosCronicos
+* Recibe los padecimientos crónicos del paciente
+* @param day
+* Recibe el día seleccionado en el calendario
+* @param month
+* Recibe el mes seleccionado en el calendario
+* @param year
+* Recibe el año seleccionado en el calendario
+* @param *ListaPacientes
+* Recibe el inicio de la lista dinámica de pacientes para poder modificar sus datos
+* @param *fecha
+* La caja de texto donde se colocará la fecha de nacimiento generada
+* @param *Ed
+* La caja de texto donde se colocará la edad generada
+* @param bandera
+* Una bandera que nos permite saber si el usuario no ha clickado ningún radio button
+* @return
+*
+*/
+
 void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gchar* direccion, const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes* ListaPacientes, GtkWidget* fecha, GtkWidget* Ed, int bandera){
   Pacientes* temp = ListaPacientes;
   GtkWidget* dialog;
@@ -810,6 +1084,22 @@ void modificarPaciente(const gchar* nombreBuscado, const gchar* nombre, const gc
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
 }
+
+/*
+* Funcion que valida que una cadena dada, contenga unicamente letras y no numeros
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *cadena
+* Recibe el la cadena que va a validar
+* @param campo
+* Recibe el nombre del campo a validar.
+* @return flag
+* Retorrna 1 o 0 segun la validacion
+*/
+
 int validarLetras(const gchar* cadena, char campo[]){
   GtkWidget* dialog;
   int i = 0;
@@ -831,6 +1121,22 @@ int validarLetras(const gchar* cadena, char campo[]){
   }
   return flag;
 }
+
+/*
+* Funcion que valida que una cadena dada contega unicamente numeros
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param cadena
+* Recibe la cadena que será validada.
+* @param campo
+* Recibe el nombre del campo a ser validado.
+* @return flag
+* Retorna 1 0 0 segun el resultado de la validacion
+*/
+
 int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida numeros
   GtkWidget* dialog;
   int i = 0;
@@ -854,6 +1160,20 @@ int validarNumeros(const gchar* Cadena, char campo[]){ // Funcion que valida num
   }
   return Status;
 }
+
+/*
+* Funcion que calcula la edad del paciente según su fecha de nacimiento y la fecha actual
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param dia, mes y anio
+* Recibe la fecha de nacimiento del paciente.
+* @return Edad
+* Retorna la edad del paciente.
+*/
+
 int CalcEdad(int Dia, int Mes, int Anio){
   int NoDias1, NoDias2,Diferencia;
   int dd, mm, aa, Edad;
@@ -870,6 +1190,19 @@ int CalcEdad(int Dia, int Mes, int Anio){
   Edad = Diferencia / 365;
   return Edad;
 }
+
+/*
+* Funcion que actualiza el archivo de pacientes
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param ListaPacientes
+* Recibe el apuntador a la lista de pacientes.
+* @return
+*
+*/
 void actualizarArchivoPacientes(Pacientes* ListaPacientes){
   Pacientes* temp = ListaPacientes;
   FILE* Archivo = fopen("pacientes.txt", "wt");
@@ -887,7 +1220,21 @@ void actualizarArchivoPacientes(Pacientes* ListaPacientes){
     temp = temp->sig;
   }
   fclose(Archivo);
-}
+}/*
+* Funcion que cambia el estado de un combo box
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void radio(GtkToggleButton* button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   if(gtk_toggle_button_get_active(button)){
@@ -899,6 +1246,20 @@ void radio(GtkToggleButton* button, gpointer data){
   }
 }
 
+/*
+* Funcion que limpia los campos del formulario de pacientes
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
 void limpiarCampos(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   datos->nombreBuscado[0] = '\0';
@@ -907,7 +1268,18 @@ void limpiarCampos(GtkButton *button, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
   gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
 }
-
+/*
+* Funcion que crea un nuevo paciente para ser añadido a la lista dinamica de pacientes
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param Datos del paciente
+* Recibe los datps del paciente a ser agregado por la funcion
+* @return
+*
+*/
 void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* telefono, int sexo, const gchar* estatura, const gchar* alergias, const gchar* tipoSangre, const gchar* padecimientosCronicos, int day, int month, int year, Pacientes** ListaPacientes, GtkWidget* fecha, GtkWidget* Ed){
   Pacientes* temp2 = *ListaPacientes;
   Pacientes* temp3 = *ListaPacientes;
@@ -971,11 +1343,41 @@ void nuevoPaciente(const gchar* nombre, const gchar* direccion,const gchar* tele
   gtk_entry_set_text(GTK_ENTRY(fecha), fecnac);
   gtk_entry_set_text(GTK_ENTRY(Ed), edadCaracter);
 }
+
+/*
+* En esta función se inserta el paciente al inicio de la lista dinámica de doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **ListaPacientes
+* Recibe los doctores que se encuentran activos
+* @param *nuevo
+* Recibe el doctor a añadir a la lista.
+* @return
+*
+*/
+
 void Inserta_Inicio(Pacientes **ListaPacientes, Pacientes *nuevo){
   nuevo->sig=*ListaPacientes;
   *ListaPacientes=nuevo;
 }
 
+/*
+* En esta función se inserta el paciente al final de la lista dinámica de doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **ListaPacientes
+* Recibe los doctores que se encuentran activos
+* @param *nuevo
+* Recibe el doctor a añadir a la lista.
+* @return
+*
+*/
 void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo){
   Pacientes *temp2;
   nuevo->sig=NULL;
@@ -989,6 +1391,22 @@ void Inserta_Fin(Pacientes **ListaPacientes, Pacientes *nuevo){
   else
     *ListaPacientes=nuevo;
 }
+
+/*
+* En esta función se inserta el paciente al inicio de la lista dinámica de doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **ListaPacientes
+* Recibe los doctores que se encuentran activos
+* @param *nuevo
+* Recibe el doctor a añadir a la lista.
+* @return
+*
+*/
+
 void generarCita(ParametrosListas* datos, const gchar* nombre){
   GtkSettings *default_settings = gtk_settings_get_default();
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
@@ -1051,6 +1469,18 @@ void generarCita(ParametrosListas* datos, const gchar* nombre){
   gtk_main();
   g_free(Entradas);
 }
+/*
+* En esta función se obtiene la fecha actual del sistema
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param date[]
+* Recibe una cadena donde se almacenará la fecha actual.
+* @return
+*
+*/
 void getDate(char date[]){
   int dd, mm, aa;
   char Timestamp[200];
@@ -1062,6 +1492,20 @@ void getDate(char date[]){
   sscanf(Timestamp,"%d,%d,%d",&aa,&mm,&dd);
   sprintf(date, "%d/%d/%d", dd, mm, aa);
 }
+/*
+* En esta función se crea una cita para un paciente seleccionado.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param boton
+* Recibe el boton que llama a la funcion
+* @param data
+* Un apuntador a las listas dinámicas con las que el programa funciona
+* @return
+*
+*/
 void crearCita(GtkWidget* boton, gpointer data){
   GenerarHistoria* datos = (GenerarHistoria*)data;
   Historia *Nuevo = (Historia*)malloc(sizeof(Historia));
@@ -1113,6 +1557,20 @@ void crearCita(GtkWidget* boton, gpointer data){
   gtk_widget_destroy(dialog);
   gtk_widget_destroy(datos->window);
 }
+/*
+* En esta función se actualiza el archivo de historia
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *HClinica
+* Recibe un apuntador al inicio de la lista de de historia clinica
+* @param paciente
+* Recibe el paciente que se actualiza.
+* @return
+*
+*/
 void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente){
   char NombreArchivo[100];
   int i = 0;
@@ -1138,6 +1596,20 @@ void actualizarArchivoHistoria(Historia* HClinica, const gchar* paciente){
   }
   fclose(Archivo);
 }
+/*
+* En esta funcion se  agrega citas a la historia medica de un paciente.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *Nuevo
+* Recibe la dirección de memoria de la lista de historias
+* @param **temp
+* Recibe la dirección de memoria de la lista de pacientes
+* @return
+*
+*/
 void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
   Historia* temp3;
   if((*temp)->HClinica == NULL){
@@ -1150,6 +1622,20 @@ void agregarNodoHistoria(Historia* Nuevo, Pacientes** temp){
     temp3->sig = Nuevo;
   }
 }
+/*
+* Esta funcion despliega el historial medico de alguno de los pacientes seleccionados
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *temp
+* Recibe un apuntador a las listas dinamicas
+* @param *nombre
+* Recibe el nombre del paciente a ser desplegado
+* @return
+*
+*/
 void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   Pacientes *paciente = temp->ListaPacientes;
   int flag = 0, numCita = 1, i = 0;
@@ -1259,6 +1745,20 @@ void mostrarHistorial(ParametrosListas *temp,const gchar* nombre){
   gtk_widget_show_all (window);
   gtk_main();
 }
+/*
+* Esta funcion despliega la lista de doctores
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *menu
+* Recibe un itemm del menu de usuario
+* @param *Listas
+* Recibe las listas dinamicas donde se buscaran los doctores
+* @return
+*
+*/
 void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
   ParametrosListas* datos = (ParametrosListas*)Listas;
   Pacientes* ListaPacientes = datos->ListaPacientes;
@@ -1331,6 +1831,20 @@ void DesplegarListaPacientes(GtkWidget* menu, gpointer Listas){
   gtk_main();
 }
 
+/*
+* Esta funcion despliega la interfaz grafica de los doctores
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *item
+* Recibe widget
+* @param *Parametros
+* Recibe las listas dinamicas que se usaran para el funcionamiento del programa
+* @return
+*
+*/
 void interfazDoctores(GtkWidget* item, gpointer Parametros){
   ParametrosListas* Listas = (ParametrosListas*)Parametros;
   gtk_widget_destroy(Listas->window);
@@ -1458,6 +1972,18 @@ void interfazDoctores(GtkWidget* item, gpointer Parametros){
   gtk_main();
 }
 
+/*
+* Esta funcion copia strings a un arreglo bisdimensional
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param campos
+* Recibe el arreglo bidimensional en donde se va a guardar las cadenas copiadas
+* @return
+*
+*/
 void copiarStrings2(char campos[11][200]){
   strcpy(campos[0], "Nombre del doctor: ");
   strcpy(campos[1], "Especialidad 1: ");
@@ -1472,6 +1998,22 @@ void copiarStrings2(char campos[11][200]){
   strcpy(campos[10], "Contraseña: ");
 }
 
+/*
+* Esta función se activa a la hora de presionar el botón de vaciar
+* formulario en el apartado de doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void limpiarCampos2(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   datos->nombreBuscado[0] = '\0';
@@ -1480,6 +2022,23 @@ void limpiarCampos2(GtkButton *button, gpointer data){
       gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
   gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
 }
+
+/*
+* En esta función se busca al doctor en la lista dinámica, si es que se
+* encuentra despliega su información en pantalla, sino arroja una ventana
+* de diálogo que le indica que “No se ha encontrado el doctor”.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
 
 void buscar2(GtkWidget* widget, gpointer data){
   GtkWidget *dialog;
@@ -1588,6 +2147,23 @@ void buscar2(GtkWidget* widget, gpointer data){
     }
   }
 }
+
+/*
+* Esta función permite asignarle instrucciones a los botones del apartado
+* de interfaz de doctores, tal como buscar, actualizar y añadir doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void botonesControlDoc(GtkWidget* button, gpointer data){
  ParametrosListas* datos = (ParametrosListas*)data;
   int validacion[7];
@@ -1692,6 +2268,41 @@ void botonesControlDoc(GtkWidget* button, gpointer data){
     nuevoDoctor(nombre, direccion, telefono, status, consultorio, dias, contra, telefonoUrgencias, horario, especialidad1, especialidad2, &datos->ListaDoctores);
   }
 }
+
+/*
+* Con esta función se modifica la información de los doctores en la lista dinámica.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param nombre
+* Recibe el nombre del doctor
+* @param direccion
+* Recibe la direccion del doctor
+* @param telefono
+* Recibe el telefono del doctor
+* @param consultorio
+* Recibe el consultorio del doctor
+* @param dias
+* Recibe los dias de atención del doctor
+* @param contra
+* Recibe la contraseña del doctor
+* @param telefonoUrgencias
+* Recibe el telefono de urgencias del doctor
+* @param horario
+* Recibe el horario de atención del doctor
+* @param especialidad1
+* Recibe de la especialidad 1 del doctor
+* @param especialidad2
+* Recibe de la especialidad 2 del doctor
+* @param **ListaDoctores
+* Recibe los doctores que se encuentran activos
+*
+* @return
+*
+*/
+
 void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores* ListaDoctores){
   Doctores* temp = ListaDoctores;
   GtkWidget* dialog;
@@ -1721,6 +2332,22 @@ void modificarDoctor(const gchar* nombre, const gchar* direccion, const gchar* t
   gtk_dialog_run(GTK_DIALOG(dialog));
   gtk_widget_destroy(dialog);
 }
+
+/*
+* Esta función actualiza los datos de los doctores en el archivo de doctores.txt,
+* para así guardar los cambios.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *ListaDoctores
+* Recibe los doctores que se encuentran activos
+*
+* @return
+*
+*/
+
 void actualizarArchivoDoctores(Doctores* ListaDoctores){
   Doctores* temp = ListaDoctores;
   FILE* Archivo = fopen("doctores.txt", "wt");
@@ -1740,6 +2367,41 @@ void actualizarArchivoDoctores(Doctores* ListaDoctores){
   }
   fclose(Archivo);
 }
+
+/*
+* En esta función se registra un nuevo doctor en el sistema.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param nombre
+* Recibe el nombre del doctor
+* @param direccion
+* Recibe la direccion del doctor
+* @param telefono
+* Recibe el telefono del doctor
+* @param consultorio
+* Recibe el consultorio del doctor
+* @param dias
+* Recibe los dias de atención del doctor
+* @param contra
+* Recibe la contraseña del doctor
+* @param telefonoUrgencias
+* Recibe el telefono de urgencias del doctor
+* @param horario
+* Recibe el horario de atención del doctor
+* @param especialidad1
+* Recibe de la especialidad 1 del doctor
+* @param especialidad2
+* Recibe de la especialidad 2 del doctor
+* @param **ListaDoctores
+* Recibe los doctores que se encuentran activos
+*
+* @return
+*
+*/
+
 void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telefono, int status, const gchar* consultorio, const gchar* dias, const gchar* contra, const gchar* telefonoUrgencias, const gchar* horario, const gchar* especialidad1, const gchar* especialidad2, Doctores** ListaDoctores){
   Doctores* temp2 = *ListaDoctores;
   Doctores* temp3 = *ListaDoctores;
@@ -1790,10 +2452,42 @@ void nuevoDoctor(const gchar* nombre, const gchar* direccion, const gchar* telef
   gtk_widget_destroy(dialog);
 }
 
+/*
+* En esta función se inserta el doctor al inicio de la lista dinámica de doctores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **ListaDoctores
+* Recibe los doctores que se encuentran activos
+* @param *nuevo
+* Recibe el doctor a añadir a la lista.
+* @return
+*
+*/
+
 void Inserta_Inicio2(Doctores **ListaDoctores, Doctores *nuevo){
   nuevo->sig=*ListaDoctores;
   *ListaDoctores=nuevo;
 }
+
+/*
+* En esta función inserta al doctor de acuerdo a la posición donde debe
+* ser colocado de la lista dinámica de pacientes.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **ListaDoctores
+* Recibe los doctores que se encuentran activos
+* @param *nuevo
+* Recibe el doctor a añadir a la lista.
+* @return
+*
+*/
+
 void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo){
   Doctores *temp2;
   nuevo->sig=NULL;
@@ -1806,6 +2500,22 @@ void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo){
   else
     *ListaDoctores=nuevo;
 }
+
+/*
+* Función que muestra en pantalla los doctores activos.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *item
+* Recibe el widget que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void listadoDoctores(GtkWidget* item, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   Doctores* ListaPacientes = datos->ListaDoctores;
@@ -1890,6 +2600,18 @@ void listadoDoctores(GtkWidget* item, gpointer data){
   gtk_widget_show_all (window);
   gtk_main();
 }
+
+/*
+* Función que muestra en pantalla el nombre de los Desarrolladores.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @return
+*
+*/
+
 void creditos(){
   GtkWidget *dialog;
   GdkPixbuf *logo;
@@ -1930,6 +2652,21 @@ void creditos(){
   gtk_about_dialog_set_documenters (GTK_ABOUT_DIALOG (dialog), documenters);
   gtk_dialog_run (GTK_DIALOG (dialog));
 }
+
+/*
+* Función que genera la ventana para buscar al doctor en base a su especialidad.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *item
+* Recibe el botón que llama a la función.
+* @param Listas
+* Recibe los datos del widget.
+* @return
+*
+*/
 
 void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
   ParametrosListas* datos = (ParametrosListas*)Listas;
@@ -1972,6 +2709,22 @@ void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
   gtk_widget_show_all (datos->window2);
   gtk_main();
 }
+
+/*
+* Función que muestra en pantalla a los doctores de acuerdo a su especialidad
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *button
+* Recibe el botón que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   Doctores* temp = datos->ListaDoctores;
@@ -2079,11 +2832,43 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   gtk_widget_show_all (window);
   gtk_main();
 }
+
+/*
+* Función que muestra el manual de usuario, para informarlo de como funcion el sistema.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param *item
+* Recibe el widget que llama a la función.
+* @param data
+* Recibe los datos del widget.
+* @return
+*
+*/
+
 void help(GtkWidget* item, gpointer data){
   printf("Hello \n");
   GError* error = NULL;
   gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/Man.pdf",GDK_CURRENT_TIME, &error);
 }
+
+/*
+* Funcion que libera memoria generada por las listas dinámicas.
+*
+* @author Arellano Velásquez Cesar Mauricio
+* Escamilla Hernandez Allan Jair
+* González Portillo Raúl
+*
+* @param **doc
+* Recibe lista dinámica de doctores registrados.
+* @param **pac
+* Recibe lista dinámica de pacientes registrados.
+* @return
+*
+*/
+
 void liberarMemoria(Doctores** doc, Pacientes** pac){
   Doctores* temp = *doc;
   Pacientes* temp5;
