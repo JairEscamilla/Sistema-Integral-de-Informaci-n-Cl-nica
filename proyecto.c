@@ -2032,7 +2032,13 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
       pango_attr_list_insert(attrlist, attr);
       gtk_label_set_attributes(GTK_LABEL(label), attrlist);
       gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, i, i+1);
-      label = gtk_label_new(temp->FullName);
+      auxiliar[0] = '\0';
+      aux2[0] = '\0';
+      strcpy(auxiliar, temp->FullName);
+      strcat(auxiliar, " (");
+      strcat(auxiliar, temp->telefono);
+      strcat(auxiliar, ").");
+      label = gtk_label_new(auxiliar);
       gtk_misc_set_alignment (GTK_MISC(label), -0.5, 0);
       gtk_table_attach_defaults (GTK_TABLE(table1), label, 1, 2, i, i+1);
       i+= 2;
