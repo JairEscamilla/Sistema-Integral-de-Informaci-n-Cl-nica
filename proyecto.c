@@ -1965,7 +1965,7 @@ void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
 void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   Doctores* temp = datos->ListaDoctores;
-  GtkWidget* window, *table1, *vbox, *swin, *viewport, *label;
+  GtkWidget* window, *table1, *vbox, *swin, *viewport, *label, *labelTit;
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   const gchar* especialidad;
@@ -2010,15 +2010,15 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
 
   strcpy(aux3, "Doctores con la especialidad: ");
   strcat(aux3, especialidad);
-  label = gtk_label_new(aux3);
-  gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+  labelTit = gtk_label_new(aux3);
+  gtk_misc_set_alignment (GTK_MISC(labelTit), 0, 0);
   pango_attr_list_insert(attrlist, attr);
-  gtk_label_set_attributes(GTK_LABEL(label), attrlist);
+  gtk_label_set_attributes(GTK_LABEL(labelTit), attrlist);
 
   table1 = gtk_table_new (5, 5, FALSE);
   gtk_table_set_row_spacings (GTK_TABLE (table1), 0);
   gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
-  gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, 0, 1);
+  //gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, 0, 1);
 
   while (temp != NULL) {
     if(strcmp(temp->Especialidad1, especialidad) == 0 || strcmp(temp->Especialidad2, especialidad) == 0){
@@ -2026,11 +2026,14 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
       strcpy(auxiliar, "Doctor ");
       sprintf(aux2, "%d", numero);
       strcat(auxiliar, aux2);
+      strcat(auxiliar, ":");
       label = gtk_label_new(auxiliar);
       gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+      pango_attr_list_insert(attrlist, attr);
+      gtk_label_set_attributes(GTK_LABEL(label), attrlist);
       gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, i, i+1);
       label = gtk_label_new(temp->FullName);
-      gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+      gtk_misc_set_alignment (GTK_MISC(label), -0.5, 0);
       gtk_table_attach_defaults (GTK_TABLE(table1), label, 1, 2, i, i+1);
       i+= 2;
       numero++;
@@ -2040,7 +2043,7 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   // ciclo
   if(numero == 1){
     label = gtk_label_new("Aún no hay doctores con esta especialidad):");
-    gtk_misc_set_alignment (GTK_MISC(label), 0.5, 0);
+    gtk_misc_set_alignment (GTK_MISC(label), 0.5, 0.3);
     pango_attr_list_insert(attrlist, attr);
     gtk_label_set_attributes(GTK_LABEL(label), attrlist);
     gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, 1, 2);
@@ -2055,6 +2058,7 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (swin), table1);
   vbox = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start (GTK_BOX (vbox), labelTit, FALSE, FALSE, 20);
   gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show_all (window);
