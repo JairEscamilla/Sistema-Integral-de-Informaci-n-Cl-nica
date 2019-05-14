@@ -2080,31 +2080,5 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
 void help(GtkWidget* item, gpointer data){
   printf("Hello \n");
   GError* error = NULL;
-  gtk_show_uri(gdk_screen_get_default(), "http:///home/jair/Downloads/Sistema-Integral-de-Informaci-n-Cl-nica/manual",GDK_CURRENT_TIME, &error);
-  /*GtkWidget* window, *vbox, *label;
-  PangoAttrList *attrlist = pango_attr_list_new();
-  PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
-  vbox = gtk_vbox_new(FALSE, 5);
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "Ayuda general del sistema");
-  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-  gtk_widget_set_size_request (window, 500, 420);
-  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
-  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
-
-  label = gtk_label_new("Administración de pacientes");
-  gtk_misc_set_alignment (GTK_MISC(label), 0.5, 0.3);
-  pango_attr_list_insert(attrlist, attr);
-  gtk_label_set_attributes(GTK_LABEL(label), attrlist);
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 20);
-
-  label = gtk_label_new("En este apartado podrás aplicar operaciones sobre pacientes, por ejemplo");
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
-  label = gtk_label_new("crear, modificar, generar cita y ver historia médica de un paciente buscado.");
-  gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
-
-  gtk_container_add (GTK_CONTAINER (window), vbox);
-  gtk_widget_show_all (window);
-  gtk_main();*/
+  gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/man.pdf",GDK_CURRENT_TIME, &error);  
 }
