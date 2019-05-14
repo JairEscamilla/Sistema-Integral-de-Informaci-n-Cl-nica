@@ -2082,7 +2082,7 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
 void help(GtkWidget* item, gpointer data){
   printf("Hello \n");
   GError* error = NULL;
-  gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/man.pdf",GDK_CURRENT_TIME, &error);
+  gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/Man.pdf",GDK_CURRENT_TIME, &error);
 }
 void liberarMemoria(Doctores** doc, Pacientes** pac){
   Doctores* temp = *doc;
