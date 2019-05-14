@@ -1473,7 +1473,7 @@ void copiarStrings2(char campos[11][200]){
 void limpiarCampos2(GtkButton *button, gpointer data){
   ParametrosListas* datos = (ParametrosListas*)data;
   datos->nombreBuscado[0] = '\0';
-  for(int i = 0; i < 11; i++)
+  for(int i = 0; i < 12; i++)
     if(i != 4 && i != 3 && i != 9 && i != 1 && i != 2)
       gtk_entry_set_text(GTK_ENTRY(datos->entry[i]), "");
   gtk_combo_box_set_active(GTK_COMBO_BOX(datos->entry[9]), 0);
@@ -2080,5 +2080,5 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
 void help(GtkWidget* item, gpointer data){
   printf("Hello \n");
   GError* error = NULL;
-  gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/man.pdf",GDK_CURRENT_TIME, &error);  
+  gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/man.pdf",GDK_CURRENT_TIME, &error);
 }
