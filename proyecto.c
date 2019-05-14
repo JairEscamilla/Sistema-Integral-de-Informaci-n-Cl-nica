@@ -108,6 +108,7 @@ void creditos();
 void preguntarEspecialidad(GtkWidget* item, gpointer Listas);
 void desplegarporEspecialidad(GtkWidget* button, gpointer data);
 void help(GtkWidget* item, gpointer data);
+void liberarMemoria(Doctores** doc, Pacientes** pac);
 // Función principal
 int main(int argc, char *argv[]) {
   GtkWidget* button = gtk_button_new_with_label("");
@@ -128,6 +129,7 @@ int main(int argc, char *argv[]) {
   if(flag == 1){ // Si se logeo con exito, entramos al sistema
     entrandoSistema(button, (gpointer)Plists);
   }
+  liberarMemoria(&Plists->ListaDoctores, &Plists->ListaPacientes);
   g_free(Parametros);
   g_free(Plists);
   return 0;
@@ -2081,4 +2083,25 @@ void help(GtkWidget* item, gpointer data){
   printf("Hello \n");
   GError* error = NULL;
   gtk_show_uri(gdk_screen_get_default(), "https://github.com/JairEscamilla/Sistema-Integral-de-Informaci-n-Cl-nica/blob/Iconos/manual/man.pdf",GDK_CURRENT_TIME, &error);
+}
+void liberarMemoria(Doctores** doc, Pacientes** pac){
+  Doctores* temp = *doc;
+  Pacientes* temp5;
+  Historia* temp3, *temp4;
+  while (*doc != NULL) {
+    *doc = (*doc)->sig;
+    free(temp);
+    temp = *doc;
+  }
+  while (*pac != NULL) {
+    temp3 = (*pac)->HClinica;
+    temp5 = *pac;
+    while (temp3 != NULL) {
+      temp4 = temp3;
+      temp3 = temp3->sig;
+      free(temp4);
+    }
+    *pac = (*pac)->sig;
+    free(temp5);
+  }
 }
