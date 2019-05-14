@@ -52,7 +52,7 @@ typedef struct _defListas{ // Estructura definida para pasar como parametro las 
   Pacientes* ListaPacientes;
   GtkWidget* entry[15];
   GtkWidget* calendar;
-  GtkWidget* window;
+  GtkWidget* window, *window2, *comboEspecialidades;
   int sexo, flag;
   char nombreBuscado[200];
   char LoggedDoctor[200];
@@ -106,6 +106,7 @@ void Inserta_Fin2(Doctores **ListaDoctores, Doctores *nuevo);
 void listadoDoctores(GtkWidget* item, gpointer data);
 void creditos();
 void preguntarEspecialidad(GtkWidget* item, gpointer Listas);
+void desplegarporEspecialidad(GtkWidget* button, gpointer data);
 // Función principal
 int main(int argc, char *argv[]) {
   Doctores* ListaDoctores = NULL;
@@ -1921,39 +1922,129 @@ void creditos(){
 }
 
 void preguntarEspecialidad(GtkWidget* item, gpointer Listas){
+  ParametrosListas* datos = (ParametrosListas*)Listas;
   GtkSettings *default_settings = gtk_settings_get_default();
   g_object_set(default_settings, "gtk-button-images", TRUE, NULL);
-  GtkWidget* window, *vbox, *label, *hbox, *combo, *boton;
+  GtkWidget *vbox, *label, *hbox, *boton;
   GtkWidget *buscar = gtk_image_new_from_file ("Iconos/Buscar.png");
   vbox = gtk_vbox_new(FALSE, 0);
   hbox = gtk_hbox_new(TRUE, 0);
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (window), "Lista de doctores por especialidad");
-  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-  gtk_widget_set_size_request (window, 250, 150);
-  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
-  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+  datos->window2 = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (datos->window2), "Lista de doctores por especialidad");
+  gtk_container_set_border_width (GTK_CONTAINER (datos->window2), 10);
+  gtk_widget_set_size_request (datos->window2, 250, 150);
+  gtk_window_set_resizable(GTK_WINDOW(datos->window2), FALSE);
+  g_signal_connect (G_OBJECT (datos->window2), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(datos->window2), GTK_WIN_POS_CENTER_ALWAYS);
   label = gtk_label_new("Ingresar la especilidad por ver: ");
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
-  combo = gtk_combo_box_new_text();
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Anatomía");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Cirugía General");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Ginecología y Obstetricia");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Medicina General");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Ortopedia");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Pediatria");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Otorrinolaringólogo");
-  gtk_combo_box_append_text(GTK_COMBO_BOX(combo), "Radiología e imágen");
-  gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
+  datos->comboEspecialidades = gtk_combo_box_new_text();
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Anatomía");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Cirugía General");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Ginecología y Obstetricia");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Medicina General");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Ortopedia");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Pediatria");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Otorrinolaringólogo");
+  gtk_combo_box_append_text(GTK_COMBO_BOX(datos->comboEspecialidades), "Radiología e imágen");
+  gtk_combo_box_set_active(GTK_COMBO_BOX(datos->comboEspecialidades), 0);
 
   boton = gtk_button_new_with_label("");
+  gtk_signal_connect(GTK_OBJECT(boton), "clicked", GTK_SIGNAL_FUNC(desplegarporEspecialidad), (gpointer)datos);
   gtk_button_set_image (GTK_BUTTON (boton), buscar);
   gtk_button_set_relief (GTK_BUTTON (boton), GTK_RELIEF_NONE);
   label = gtk_label_new(NULL);
-  gtk_box_pack_start (GTK_BOX (hbox), combo, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (hbox), datos->comboEspecialidades, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), boton, FALSE, FALSE, 0);
+  gtk_container_add (GTK_CONTAINER (datos->window2), vbox);
+  gtk_widget_show_all (datos->window2);
+  gtk_main();
+}
+void desplegarporEspecialidad(GtkWidget* button, gpointer data){
+  ParametrosListas* datos = (ParametrosListas*)data;
+  Doctores* temp = datos->ListaDoctores;
+  GtkWidget* window, *table1, *vbox, *swin, *viewport, *label;
+  const gchar* especialidad;
+  char auxiliar[200], aux2[200];
+  GtkAdjustment *horizontal, *vertical;
+  int opcion, numero = 1, i = 0;
+  opcion = gtk_combo_box_get_active(GTK_COMBO_BOX(datos->comboEspecialidades));
+  switch (opcion) {
+    case 0:
+      especialidad = "Anatomía";
+      break;
+    case 1:
+      especialidad = "Cirugía General";
+      break;
+    case 2:
+      especialidad = "Ginecología y Obstetricia";
+      break;
+    case 3:
+      especialidad = "Medicina General";
+      break;
+    case 4:
+      especialidad = "Ortopedia";
+      break;
+    case 5:
+      especialidad = "Pediatria";
+      break;
+    case 6:
+      especialidad = "Otorrinolaringólogo";
+      break;
+    case 7:
+      especialidad = "Radiología e imágen";
+      break;
+  }
+  gtk_widget_destroy(datos->window2);
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Lista de doctores");
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  gtk_widget_set_size_request (window, 500, 400);
+  gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
+  g_signal_connect (G_OBJECT (window), "destroy", G_CALLBACK (gtk_main_quit), NULL);
+  gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
+
+  table1 = gtk_table_new (5, 5, FALSE);
+  gtk_table_set_row_spacings (GTK_TABLE (table1), 0);
+  gtk_table_set_col_spacings (GTK_TABLE (table1), 0);
+
+  while (temp != NULL) {
+    if(strcmp(temp->Especialidad1, especialidad) == 0 || strcmp(temp->Especialidad2, especialidad) == 0){
+      auxiliar[0] = '\0';
+      strcpy(auxiliar, "Doctor ");
+      sprintf(aux2, "%d", numero);
+      strcat(auxiliar, aux2);
+      label = gtk_label_new(auxiliar);
+      gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+      gtk_table_attach_defaults (GTK_TABLE(table1), label, 0, 1, i, i+1);
+    //  i+= 2;
+      label = gtk_label_new(temp->FullName);
+      gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+      gtk_table_attach_defaults (GTK_TABLE(table1), label, 1, 2, i, i+1);
+      i+= 2;
+      numero++;
+    }
+    temp = temp->sig;
+  }
+  // ciclo
+  if(numero == 1){
+    label = gtk_label_new("Aún no hay doctores con esta especialidad):");
+    gtk_misc_set_alignment (GTK_MISC(label), 0, 0);
+    gtk_table_attach_defaults (GTK_TABLE(table1), label, 1, 2, 2, 3);
+  }
+
+  swin = gtk_scrolled_window_new (NULL, NULL);
+  horizontal = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (swin));
+  vertical = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (swin));
+  viewport = gtk_viewport_new (horizontal, vertical);
+  gtk_container_set_border_width (GTK_CONTAINER (swin), 5);
+  gtk_container_set_border_width (GTK_CONTAINER (viewport), 5);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (swin), table1);
+  vbox = gtk_vbox_new (FALSE, 5);
+  gtk_box_pack_start_defaults (GTK_BOX (vbox), swin);
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show_all (window);
   gtk_main();
