@@ -2078,7 +2078,10 @@ void desplegarporEspecialidad(GtkWidget* button, gpointer data){
   gtk_main();
 }
 void help(GtkWidget* item, gpointer data){
-  GtkWidget* window, *vbox, *label;
+  printf("Hello \n");
+  GError* error = NULL;
+  gtk_show_uri(gdk_screen_get_default(), "http:///home/jair/Downloads/Sistema-Integral-de-Informaci-n-Cl-nica/manual",GDK_CURRENT_TIME, &error);
+  /*GtkWidget* window, *vbox, *label;
   PangoAttrList *attrlist = pango_attr_list_new();
   PangoAttribute *attr = pango_attr_size_new_absolute(20 * PANGO_SCALE);
   vbox = gtk_vbox_new(FALSE, 5);
@@ -2103,5 +2106,5 @@ void help(GtkWidget* item, gpointer data){
 
   gtk_container_add (GTK_CONTAINER (window), vbox);
   gtk_widget_show_all (window);
-  gtk_main();
+  gtk_main();*/
 }
